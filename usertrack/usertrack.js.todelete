@@ -1,0 +1,18 @@
+(function(){
+var app=angular.module('userTrackApp', []);
+app.config(function($interpolateProvider){
+        $interpolateProvider.startSymbol('[[').endSymbol(']]');
+    });
+app.controller('userTrackController', function() {
+    var userTrack = this;
+    userTrack.list = [
+      {user_id:101,start_date: Date(1,1,2011),end_date:Date(1,2,2018),num_computers:10, is_active:true},
+      {user_id:102,start_date: Date(1,1,2014),end_date:Date(1,2,2015),num_computers:5, is_active:true},
+      {user_id:103,start_date: Date(1,1,2013),end_date:Date(1,2,2014),num_computers:7, is_active:false}];
+ 
+    userTrack.addUser = function() {
+      userTrack.list.push({user_id:userTrack.user_id,start_date: userTrack.start_date,end_date:userTrack.end_date,num_computers:userTrack.num_computers, is_active:user_track.is_active});
+    };
+   });
+});
+      

@@ -1,0 +1,85 @@
+<!--  <pre>List= [[1+2]]</pre>
+  <pre>List= [[userTrack.list]]</pre> -->
+  <!-- Default panel contents -->
+ <table class="table table-condensed table-hover" >
+ <thead>
+ <tr>
+ <!--
+  <th ng-click="sortPredicate='user_id';sortReverse=!sortReverse">
+             <span ng-show="sortPredicate=='user_id' && sortReverse" class="glyphicon glyphicon-chevron-up"> </span>
+             <span ng-show="sortPredicate=='user_id' && !sortReverse" class="glyphicon glyphicon-chevron-down"> </span>
+              User Id
+  </th>
+ -->
+  <th ng-click="sortPredicate='computer_id';sortReverse=!sortReverse">
+      <span ng-show="sortPredicate=='computer_id' && sortReverse" class="glyphicon glyphicon-chevron-up"> </span>
+      <span ng-show="sortPredicate=='computer_id' && !sortReverse" class="glyphicon glyphicon-chevron-down"> </span>
+      s#
+  </th>
+    <th ng-click="sortPredicate='os_user';sortReverse=!sortReverse" >
+      <span ng-show="sortPredicate=='os_user' && sortReverse" class="glyphicon glyphicon-chevron-up"> </span>
+      <span ng-show="sortPredicate=='os_user' && !sortReverse" class="glyphicon glyphicon-chevron-down"> </span>
+      OS User
+  </th>
+
+    <th ng-click="sortPredicate='mac_address';sortReverse=!sortReverse" >
+        <span ng-show="sortPredicate=='mac_address' && sortReverse" class="glyphicon glyphicon-chevron-up"> </span>
+        <span ng-show="sortPredicate=='mac_address' && !sortReverse" class="glyphicon glyphicon-chevron-down"> </span>
+        Mac Address
+  </th>
+
+  <th ng-click="sortPredicate='ram_kb';sortReverse=!sortReverse">
+      <span ng-show="sortPredicate=='ram_kb' && sortReverse" class="glyphicon glyphicon-chevron-up"> </span>
+      <span ng-show="sortPredicate=='rma_kb' && !sortReverse" class="glyphicon glyphicon-chevron-down"> </span>
+      Memory KB
+  </th>
+
+  <th ng-click="sortPredicate='os_name';sortReverse=!sortReverse">
+      <span ng-show="sortPredicate=='os_name' && sortReverse" class="glyphicon glyphicon-chevron-up"> </span>
+      <span ng-show="sortPredicate=='os_name' && !sortReverse" class="glyphicon glyphicon-chevron-down"> </span>
+      OS
+  </th>
+  <th ng-click="sortPredicate='os_version';sortReverse=!sortReverse">
+      <span ng-show="sortPredicate=='os_version' && sortReverse" class="glyphicon glyphicon-chevron-up"> </span>
+      <span ng-show="sortPredicate=='os_version' && !sortReverse" class="glyphicon glyphicon-chevron-down"> </span>
+      OS Version
+  </th>
+  <th ng-click="sortPredicate='access_dt';sortReverse=!sortReverse">
+      <span ng-show="sortPredicate=='access_dt' && sortReverse" class="glyphicon glyphicon-chevron-up"> </span>
+      <span ng-show="sortPredicate=='access_dt' && !sortReverse" class="glyphicon glyphicon-chevron-down"> </span>
+      Last Access Date
+  </th>
+  <th ng-click="sortPredicate='last_session_id';sortReverse=!sortReverse">
+      <span ng-show="sortPredicate=='last_session_id' && sortReverse" class="glyphicon glyphicon-chevron-up"> </span>
+      <span ng-show="sortPredicate=='last_session_id' && !sortReverse" class="glyphicon glyphicon-chevron-down"> </span>
+      Last Session ID
+  </th>
+  <th ng-show="adminMode"> <!-- for action -->
+  </th>
+
+</tr>
+</thead>
+<!--<tbody ng-repeat="item in userComputer.list | filter:{user_id:userId} | orderBy:sortPredicate:sortReverse"> -->
+<tbody ng-repeat="item in list | filter:{track_id:trackId} | orderBy:sortPredicate:sortReverse">
+
+ <tr>
+
+  <td>[[item.computer_id]] </td>
+  <td class="text-success">[[item.os_user]]</td>
+  <td class="text-success">[[item.mac_address]]</td>  
+  <td>[[item.ram_kb]]</td>
+  <td>[[item.os_name]]</td>
+  <td>[[item.os_version]]</td>
+  <td>[[item.access_dt]]</td>
+  <td>[[item.last_session_id]]</td>
+  <td ng-show="adminMode">
+  <a  href="" target="_blank" aria-label="Properties" ng-click="attributes('Attributes for '+[[item.os_user]])"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></a> 
+  <span class="glyphicon glyphicon-option-vertical" aria-hidden="true"></span>
+  <a href="" aria-label="Remove" ng-click="delete(item)"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a> 
+  
+  </td>
+  
+  </tr>
+ </tbody>
+</table>
+

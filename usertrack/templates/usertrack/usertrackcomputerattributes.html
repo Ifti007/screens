@@ -1,0 +1,58 @@
+<!--  <pre>List= [[1+2]]</pre>
+  <pre>List= [[userTrack.list]]</pre> -->
+  <!-- Default panel contents -->
+  
+  <div class="modal-header"> 
+            <h3 class="modal-title">[[msg]]</h3> 
+        </div> 
+        <div class="modal-body"> 
+             <table class="table table-condensed table-hover" >
+ <thead>
+ <tr>
+ <!--
+  <th ng-click="sortPredicate='user_id';sortReverse=!sortReverse">
+             <span ng-show="sortPredicate=='user_id' && sortReverse" class="glyphicon glyphicon-chevron-up"> </span>
+             <span ng-show="sortPredicate=='user_id' && !sortReverse" class="glyphicon glyphicon-chevron-down"> </span>
+              User Id
+  </th>
+ -->
+  <th ng-click="sortPredicate='computer_id';sortReverse=!sortReverse">
+      <span ng-show="sortPredicate=='computer_id' && sortReverse" class="glyphicon glyphicon-chevron-up"> </span>
+      <span ng-show="sortPredicate=='computer_id' && !sortReverse" class="glyphicon glyphicon-chevron-down"> </span>
+      Id
+  </th>
+    <th ng-click="sortPredicate='attribute_name';sortReverse=!sortReverse" >
+      <span ng-show="sortPredicate=='attribute_name' && sortReverse" class="glyphicon glyphicon-chevron-up"> </span>
+      <span ng-show="sortPredicate=='attribute_name' && !sortReverse" class="glyphicon glyphicon-chevron-down"> </span>
+      Attribute
+  </th>
+
+    <th ng-click="sortPredicate='attribute_value';sortReverse=!sortReverse" >
+        <span ng-show="sortPredicate=='attribute_value' && sortReverse" class="glyphicon glyphicon-chevron-up"> </span>
+        <span ng-show="sortPredicate=='attribute_value' && !sortReverse" class="glyphicon glyphicon-chevron-down"> </span>
+        Attribute Value
+  </th>
+
+
+</tr>
+</thead>
+<!--<tbody ng-repeat="item in userComputer.list | filter:{user_id:userId} | orderBy:sortPredicate:sortReverse"> -->
+<tbody ng-repeat="item in list | orderBy:sortPredicate:sortReverse">
+
+ <tr>
+
+  <td>[[item.computer_id]] </td>
+  <td>[[item.attribute_name]]</td>
+  <td>[[item.attribute_value]]</td>
+  
+  </tr>
+ </tbody>
+</table>
+        </div>  
+        <div class="modal-footer">  
+            <button ng-if="showYes" class="btn btn-primary" ng-click="ok('yes')">Ok</button>  
+            <button ng-if="showNo" class="btn btn-primary" ng-click="ok('no')">No</button>  
+            <button ng-if="showCancel" class="btn btn-warning" ng-click="cancel()">Cancel</button> 
+        </div>
+
+
