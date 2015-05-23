@@ -1,0 +1,226 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html  lang="en">
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+ <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+ <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+ <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+ <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.12.1.js"></script>
+
+ <script src="{% static 'events/events.js' %}"></script>
+
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+
+<body ng-app="eventsApp">
+<div class="jumbotron">
+<div class="container">
+  <h1>Event Management <small>Manage your event</small></h1>
+</div>
+</div>
+<div class="container" ng-controller="eventsController as events">
+
+ 
+ <!-- <pre>selected id= [[events.selectedId]]</pre> -->
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">
+  <div class="row">
+  <div class="col-md-8">
+  <form class="form-inline">
+    <div class="form-group">
+      <input type="search" class="form-control" ng-model="searchStr" />
+      <button type="submit" class="btn btn-primary" ng-click="getList(searchStr)"> <span class="glyphicon glyphicon-search"></span></button>
+      <img src="{% static 'events/busy_indicator.gif' %}" alt="busy" ng-show="_isBusy"/> </img>
+    </div>
+   </form>
+   </div>
+  <div class="col-md-2">
+    <div class="btn-group pull-right" dropdown is-open="status.isopen">
+      <button type="button" class="btn dropdown-toggle" dropdown-toggle ng-disabled="disabled">
+        <span class="glyphicon glyphicon-cog"></span> <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu">
+       <li>
+        <div style="padding:3px 20px">  <!-- too match style of a attributes below --> 
+           <label ng-disabled="adminMode">Admin Mode</label> <input type="checkbox" ng-model="adminMode" > 
+       </div>
+        </li>
+        <li>
+        <div style="padding:3px 20px">  <!-- too match style of a attributes below --> 
+           <label ng-disabled="demoMode">Demo Mode</label> <input type="checkbox" ng-model="demoMode" > 
+       </div>
+        </li>
+        <li><a href="#" ng-click="dialogBox('Are you sure you want to delete?','y')">Open Dialog box</a></li>
+        <li class="divider"></li>
+        <li><a href="#">Separated link</a></li>
+      </ul>
+    </div>
+  </div> 
+  <div class="col-md-2 pull-right"> 
+    <small style="margin:0">Items Per Page:    <select
+            ng-model="itemsPerPage"
+            ng-options="size for size in itemsPerPageOptions"
+            ng-change="getList()">    </select>
+    Showing [[list.length]] of [[totalItems]]  items </small> 
+   </div> 
+
+  </div> <!--row -->
+  </div>  <!--panel heading -->
+  <!--
+   <div >
+    <input class="form-control" ng-model="query" placeholder="search">
+   </div> 
+   -->
+   
+   
+
+<div class="panel-body">
+<table class="table table-condensed table-bordered table-hover" >
+ <thead>
+ <tr>
+  <th ng-show="adminMode">Action</th>
+  
+
+
+  <th ng-click="sortPredicate='pk';sortReverse=!sortReverse">
+             <span ng-show="sortPredicate=='pk' && sortReverse" class="glyphicon glyphicon-chevron-up"> </span>
+             <span ng-show="sortPredicate=='pk' && !sortReverse" class="glyphicon glyphicon-chevron-down"> </span>
+              pk
+  </th> 
+
+  <th ng-click="sortPredicate='fields.user.user_id';sortReverse=!sortReverse">
+             <span ng-show="sortPredicate=='fields.user.user_id' && sortReverse" class="glyphicon glyphicon-chevron-up"> </span>
+             <span ng-show="sortPredicate=='fields.user.user_id' && !sortReverse" class="glyphicon glyphicon-chevron-down"> </span>
+             User Id
+  </th>
+  
+  <th ng-click="sortPredicate='fields.user.user_name';sortReverse=!sortReverse">
+             <span ng-show="sortPredicate=='fields.user.user_name' && sortReverse" class="glyphicon glyphicon-chevron-up"> </span>
+             <span ng-show="sortPredicate=='fields.user.user_name' && !sortReverse" class="glyphicon glyphicon-chevron-down"> </span>
+             User
+  </th>
+
+  <th ng-click="sortPredicate='fields.application.application_id';sortReverse=!sortReverse">
+             <span ng-show="sortPredicate=='fields.application.application_id' && sortReverse" class="glyphicon glyphicon-chevron-up"> </span>
+             <span ng-show="sortPredicate=='fields.application.application_id' && !sortReverse" class="glyphicon glyphicon-chevron-down"> </span>
+             App Id
+  </th>
+  <th ng-click="sortPredicate='fields.application.application_name';sortReverse=!sortReverse">
+             <span ng-show="sortPredicate=='fields.application.application_name' && sortReverse" class="glyphicon glyphicon-chevron-up"> </span>
+             <span ng-show="sortPredicate=='fields.application.application_name' && !sortReverse" class="glyphicon glyphicon-chevron-down"> </span>
+             Application
+  </th>
+
+  <th ng-click="sortPredicate='fields.num_computers';sortReverse=!sortReverse">
+      <span ng-show="sortPredicate=='fields.num_computers' && sortReverse" class="glyphicon glyphicon-chevron-up"> </span>
+      <span ng-show="sortPredicate=='fields.num_computers' && !sortReverse" class="glyphicon glyphicon-chevron-down"> </span>
+      # of Computers
+  </th>
+  <th ng-click="sortPredicate='fields.active';sortReverse=!sortReverse">
+      <span ng-show="sortPredicate=='fields.active' && sortReverse" class="glyphicon glyphicon-chevron-up"> </span>
+      <span ng-show="sortPredicate=='fields.active' && !sortReverse" class="glyphicon glyphicon-chevron-down"> </span>
+      Enforced
+  </th>
+
+  <th ng-click="sortPredicate='fields.start_date';sortReverse=!sortReverse">
+        <span ng-show="sortPredicate=='fields.start_date' && sortReverse" class="glyphicon glyphicon-chevron-up"> </span>
+        <span ng-show="sortPredicate=='fields.start_date' && !sortReverse" class="glyphicon glyphicon-chevron-down"> </span>
+        Enforce Start Date
+  </th>
+  <th ng-click="sortPredicate='fields.end_date';sortReverse=!sortReverse">
+      <span ng-show="sortPredicate=='fields.end_date' && sortReverse" class="glyphicon glyphicon-chevron-up"> </span>
+      <span ng-show="sortPredicate=='fields.end_date' && !sortReverse" class="glyphicon glyphicon-chevron-down"> </span>
+      Enforce End Date
+  </th>
+</tr>
+</thead>
+<tbody ng-repeat="item in list| filter:query | orderBy:sortPredicate:sortReverse">
+ <tr>
+   
+  <td ng-show="adminMode" class="col-sm-1">   <!--Action-->  
+   <button aria-label="Remove" ng-hide="item._editMode || item._addMode" ng-click="delete(item)"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button> 
+   <button aria-label="Edit" ng-hide="item._editMode || item._addMode" ng-click="edit(item)"><span  class="glyphicon glyphicon-pencil" aria-hidden="true"  ></span></button>
+   <button aria-label="Save" ng-show="item._editMode || item._addMode" ng-click="save(item)" > <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true" ></span></button> 
+   <button aria-label="Undo" ng-show="item._editMode || item._addMode" ng-click="undo(item)" > <span class="glyphicon glyphicon-repeat" aria-hidden="true" ></span></button> 
+   <img src="{% static 'events/busy_indicator.gif' %}" alt="busy" ng-show="item._isBusy"> </img> 
+  </td>
+  
+  
+  <!--Display Mode -->
+   
+  <td ng-show="!item._editMode"> <a ng-click="item._expanded=!item._expanded">[[item.pk]] </a></td> 
+  <td ng-show="!item._editMode"> <a ng-click="item._expanded=!item._expanded">[[item.fields.user.user_id]] </a> </td>
+  <td ng-show="!item._editMode"> [[item.fields.user.user_name]] </td>
+  <td ng-show="!item._editMode"> [[item.fields.application.application_id]] </td>
+  <td ng-show="!item._editMode"> [[item.fields.application.application_name]] </td>
+  <td ng-show="!item._editMode"> [[item.fields.num_computers]]</td>
+  <td ng-show="!item._editMode"> <span ng-show="item.fields.active=='Y'" class="glyphicon glyphicon-check"></span><span ng-show="item.fields.active=='N'" class="glyphicon glyphicon-unchecked"></span></td>
+  <td ng-show="!item._editMode">[[item.fields.start_date | date:'MM/dd/yyyy HH:mm']]</td>              
+  <td ng-show="!item._editMode">[[item.fields.end_date | date:'MM/dd/yyyy HH:mm']]</td>
+
+  <!--Edit and Add Mode  should match number of colums to display mode otherwise grid will be a mess-->
+   <td ng-show="item._editMode"> [[item._edits.pk]]</td> 
+      <!--<user-email-list user-id="item._edits.pk" user-email="item._edits.fields.USER_EMAIL"> </user-email-list>-->
+   <td ng-show="item._editMode && item._addMode"> <input class="form-control" placeholder="User Id" ng-model="item._edits.fields.user.user_id">  </td>
+   <td ng-show="item._editMode && item._addMode"> <input class="form-control" placeholder="User" ng-model="item._edits.fields.user.user_name" > </td>
+   <!--<user-email-list user-id="item._edits.pk" user-email="email"> </user-email-list>< -->
+   <td ng-show="item._editMode && item._addMode"> <input class="form-control" placeholder="App Id" ng-model="item._edits.fields.application.application_id">  </td>
+   <td ng-show="item._editMode && item._addMode"> <input class="form-control" placeholder="Application" ng-model="item._edits.fields.application.application_name" > </td>
+
+   <td ng-show="item._editMode && !item._addMode"> [[item._edits.fields.user.user_id]] </td>
+   <td ng-show="item._editMode && !item._addMode"> [[item._edits.fields.user.user_name]] </td>
+   <td ng-show="item._editMode && !item._addMode"> [[item._edits.fields.application.application_id]] </td>
+   <td ng-show="item._editMode && !item._addMode"> [[item._edits.fields.application.application_name]] </td>
+
+   <td ng-show="item._editMode"> <input  type="number" ng-model="item._edits.fields.num_computers" placeholder="Number of computers authorized" > </td>
+   <td ng-show="item._editMode"> <input  type="checkbox" ng-model="item._edits.fields.active" ng-true-value="'Y'" ng-false-value="'N'" ng-change="fieldChanged(item,'active')"> </td>
+   <td ng-show="item._editMode">[[item._edits.fields.start_date | date:'MM/dd/yyyy HH:mm']]</td>              
+   <td ng-show="item._editMode">[[item._edits.fields.end_date | date:'MM/dd/yyyy HH:mm']]</td>
+  
+  <tr ng_show="item._expanded">
+  <td></td>  <!-- Action -->
+  <td colspan=10>
+  <div class="well well-sm" user-computer trackid= "item.pk" admin-Mode="adminMode">  </div>
+  </td>
+  </tr>
+  </tr>
+ </tbody>
+ <tfoot>
+ </tfoot>
+</table>
+<alert ng-repeat="alert in alerts" type="[[alert.type]]" close="closeAlert($index)">[[alert.msg]]</alert>
+</div>
+  <div class="panel-footer">
+<!--  <div class="container"> -->
+  
+  <div class="row"> 
+   <div class="col-md-2" ng-show="adminMode"><button type="button" class="btn btn-default btn-sm" aria-label="Add" ng-click="add()">
+    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+    Add User
+    </button> </div> 
+   <div class="col-md-6"><pagination class="pagination pagination-sm" style="margin:0" direction-links="false" boundary-links="true" total-items="totalItems"  ng-model="currentPage" ng-change="pageChanged()" items-per-page="itemsPerPage" num-pages="numPages"></pagination>  </div>
+  <!-- <div class="col-md-2 pull-right"> <code>Items Per Page: [[itemsPerPage]] </code> </div> -->
+   <div class="col-md-2 pull-right"> 
+    <small style="margin:0">Items Per Page:    <select
+            ng-model="itemsPerPage"
+            ng-options="size for size in itemsPerPageOptions"
+            ng-change="getList()">    </select>
+    Showing [[list.length]] of [[totalItems]]  items </small> 
+   </div> 
+<!--  </div> -->
+  </div> 
+  </div>  
+</div>
+
+
+</div>
+
+
+
+
+
+</body>
+</html>

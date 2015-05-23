@@ -15,13 +15,15 @@ Including another URLconf
 """
 from django.conf.urls import include,url
 from django.contrib import admin
-from usertrack import urls as usertrackurls
-from api import urls as apiurls
+from usertrack import urls as userTrackUrls
+from api import urls as apiUrls
+from events import urls as eventsUrls
 
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^usertrack/', include(usertrackurls)),
-    url(r'^api/',include(apiurls)),
+    url(r'^usertrack/', include(userTrackUrls)),
+    url(r'^events/', include(eventsUrls)),
+    url(r'^api/',include(apiUrls)),
     
 ]
