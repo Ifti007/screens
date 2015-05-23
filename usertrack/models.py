@@ -18,8 +18,8 @@ class USER(models.Model):
         return (ret)
         
     class Meta:
-      #verbose_name_plural=""
-      db_table="IU_USER"
+        #verbose_name_plural=""
+        db_table="IU_USER"
 
 
 class APPLICATION(models.Model):
@@ -38,8 +38,8 @@ class APPLICATION(models.Model):
         return (ret)
         
     class Meta:
-      #verbose_name_plural=""
-      db_table="IU_APPLICATION"
+        #verbose_name_plural=""
+        db_table="IU_APPLICATION"
 
 #class UserName(models.Field):
 #    description = "User Name for a given user_id"
@@ -75,11 +75,11 @@ class USER_TRACKED(models.Model):
     
         
     def __str__(self):
-       return unicode(self.user_id)
+        return self.user_id
     class Meta:
-      #verbose_name_plural=""
-      db_table="IU_USER_TRACKED"
-      #unique_together=('application_id','user_id')
+        #verbose_name_plural=""
+        db_table="IU_USER_TRACKED"
+        #unique_together=('application_id','user_id')
 
 class USER_COMPUTER(models.Model):
     computer_id =  models.AutoField(primary_key=True,db_column='COMPUTER_ID')
@@ -95,11 +95,11 @@ class USER_COMPUTER(models.Model):
     last_session_id=models.IntegerField(db_column='LAST_SESSION_ID')
 
     def __str__(self):
-       return self.computer_id
+        return self.computer_id
     class Meta:
-      #verbose_name_plural=""
-      db_table="IU_USER_COMPUTER"
-      unique_together = (('track_id', 'track_line_id'),)
+        #verbose_name_plural=""
+        db_table="IU_USER_COMPUTER"
+        unique_together = (('track_id', 'track_line_id'),)
 
 
 class USER_COMPUTER_ATTRIB(models.Model):
@@ -110,11 +110,11 @@ class USER_COMPUTER_ATTRIB(models.Model):
     attrib_value =  models.CharField(max_length=128,db_column='ATTRIB_VALUE')
 
     def __str__(self):
-       return self.computer_attrib_id
+        return self.computer_attrib_id
     class Meta:
-      #verbose_name_plural=""
-      db_table="IU_USER_COMPUTER_ATTRIB"
-      unique_together = (('computer_id', 'attrib_name'),)
+        #verbose_name_plural=""
+        db_table="IU_USER_COMPUTER_ATTRIB"
+        unique_together = (('computer_id', 'attrib_name'),)
 
 
       
