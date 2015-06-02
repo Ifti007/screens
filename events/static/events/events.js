@@ -6,86 +6,59 @@ app.config(function($interpolateProvider){
         $interpolateProvider.startSymbol('[[').endSymbol(']]');
     });
     
-app.controller('userTrackController', function($scope,$http,$modal) {
+var data={attendees=[Name]};
+var members=[
+   {memberId:2742669,category:"Member",name:"Imam, Mohsin",phone:"9257086071",company:"Google",email:"mohsin.imam@gmail.com",position:"Enterprise Sales Manager",expDate:"09/21/2014",daysDue:236,address:"49002 Cinnamon Fern Cmn, Unit 432, Fremont, CA, 94539, USA",spouse:"Khan, Drakshan"}
+   ,{memberId:2749617,category:"Member",name:"Naseer, Moez",phone:"4088364751",company:"OPEN Silicon Valley",email:"mnaseer@gmail.com",position:"IT Co-Chair",expDate:"1/21/2013",daysDue:366,address:"1401 Red Hawk, O-305, Fremont, CA, 94538, USA"}
+   ,{memberId:2755826,category:"Charter Member",name:"Abbasi, Sohaib",phone:"6503855280",company:"Informatica",email:"sohaib.abbasi@informatica.com",expDate:"12/31/2013",daysDue:366}		
+   ,{memberId:2755827,category:"Charter Member",name:"Abdul, Bari",phone:"5103641870",company:"Google",email:"bari.abdul@wharton.upenn.edu",expDate:"12/31/2013",daysDue:366,address="323 pilgrim loop, fremont, CA, 94539, USA"}
+   ,{memberId:2756787,category:"Student Member",name:"Qayyum, Umair",phone:"8122198954",company:"McAfee",email:"umairqayyum@gmail.com",position:"Product Marketing",expDate:"2/25/2011",daysDue:366,address:"1999 Larsen Place, Santa Clara, CA, 95051, USA"}	
+   ,{memberId:2757030,category:"Student Member",name:"Zaidi, Abbas",phone:"4086579395",	company:"HyperBreed.com",email:"buzzaz@gmail.com",position:"Director of Product Development",expDate:"3/9/2016",address:"749 27th St, San Francisco, CA, 94131, USA",spouse:"Haider, Ferman"}
+   ,{memberId:2756327,category:"Non-Member",name:"Chughtai, Laiq",phone:"4084314750",email:"laiq_chughtai@hotmail.com"}	
+   ,{memberId:2756328,categor:"Non-Member",name:"Chui, Candace",email:"candacechui@mushibo.com"}	
+   ];
+
+var attendees=[
+    {member:{members[0]},badgePrinted:true,badgePrintDate:"",isRegistered:true,registrationDate:"",type:"Chartered Member"}];
+
+
+// Sets List header, should be able to save code in html file
+
+app.controller('attendeeListController', function($scope,$http,$modal) {
    $scope.demoMode=true;  //If demoMode is true then sample json in the js is used, controller doesnt attempt to make api calls to 
    getOnLoad=true; //If true then data is fetched as soon as page is loaded otherwise we hook the fetch with search.
    $scope.list=[];
-   //Some controller level variables
-   $scope.adminMode=true; //Used in UI to disable add/edit/delete buttons. It will be provided by some authorization control
-   
-   
-   
+
+   // Sets List header, should be able to save code in html file
+   $scope.itemHeaders=[
+                       //{title:"ID",field:"trackedUserId"},
+                       {title:"User ID",field:"fields.userInfo.userId"},
+                       {title:"User",field:"fields.userInfo.username"},
+                       {title:"Application",field:"fields.application.shortName"},
+                       {title:"Computers Used",field:"fields.addedComputers",tooltip:"Number of different computers a user have used to login to an application."},
+                       {title:"Max Computers",field:"fields.numComputers",tooltip:"Maximum number of unique computers allowed for a user for an application."},
+                       {title:"Enforced Active",field:"fields.active",tooltip:"If checked then computer limit is in effect for the user."},
+                       {title:"Enforce Start Date",field:"fields.startDate",tooltip:"Time when computer limit restriction was started for the user."},	
+                       {title:"Enforce End Date",field:"fields.endDate",tooltip:"Time when computer limit restriction was no longer enforced."}];
+
+   $scope.sort=function(header){
+   	   $scope.sortPredicate = header.field;
+   	   $scope.sortReverse = ! $scope.sortReverse;
+   };
+
    /* Pagination */
    $scope.itemsPerPage=10;
    $scope.itemsPerPageOptions=[5,10,15,20,25,100];
-   
+
    //$scope.setPage = function (pageNo) {
    //   $scope.currentPage = pageNo;
    // };
 
-  $scope.pageChanged = function() {
+   $scope.pageChanged = function() {
     console.log('Page changed to: ' + $scope.currentPage);
     $scope.getList($scope.currentPage);
-  };
+   };
 
-   /* End Pagination */
-   
-   /* Alerts */
-  $scope.alerts = [
-    { type: 'danger', msg: 'Oh snap! Change a few things up and try submitting again.' },
-    { type: 'success', msg: 'Well done! You successfully read this important alert message.' }
-     ];
-  $scope.alerts = [];
-  $scope.addAlert = function(msg,type='info') {
-                         $scope.alerts.push({msg: msg,type:type});
-                         };
-
-  $scope.closeAlert = function(index) {
-      $scope.alerts.splice(index, 1);
-      };
-   
-   /* End Alerts */
-  
-  /* Dialog box */
-  
-  $scope.dialogBox=function(msg,ync){
-      return $modal.open({
-      template: '<div class="modal-header"> \
-            <h3 class="modal-title">Confirm Dialog Box</h3> \
-        </div> \
-        <div class="modal-body"> \
-            <p> [[msg]]  </p> \
-        </div>  \
-        <div class="modal-footer">  \
-            <button ng-if="showYes" class="btn btn-primary" ng-click="ok(\'yes\')">Yes</button>  \
-            <button ng-if="showNo" class="btn btn-primary" ng-click="ok(\'no\')">No</button>  \
-            <button ng-if="showCancel" class="btn btn-warning" ng-click="cancel()">Cancel</button> \
-        </div>',
-      controller: function ($scope, $modalInstance) {
-                         $scope.msg=msg;
-                         $scope.ync = ync || 'y';
-                         $scope.showYes = (ync.indexOf('y')>=0);
-                         $scope.showNo = (ync.indexOf('n')>=0);
-                         $scope.showCancel = (ync.indexOf('c')>=0);
-                         
-
-                  $scope.ok = function (yesNo) {
-                            $modalInstance.close(yesNo);
-                             };
-                  $scope.cancel = function () {
-                           $modalInstance.dismiss('cancel');
-                            };
-                    },
-      //size: 'sm',
-      controllerAs: 'ModelInstanceCtrl',
-      resolve: {
-        items: function () {
-          return $scope.items;
-        }
-      }});  //End dialogbox
-     };  //End dialogBox function
-  
-  /* end Dialog Box */
 
 
    // userTrack.list = [

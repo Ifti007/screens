@@ -1,0 +1,124 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+
+<head>
+ <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>  -->
+ <link rel="stylesheet" href="{% static 'bootstrap-3.3.4-dist/css/bootstrap.min.css' %}">
+ <script src="{% static 'bootstrap-3.3.4-dist/js/bootstrap.min.js' %}"></script>
+ <script src="{% static 'angular-1.4.0/angular.min.js' %}"></script>
+ <script src="{% static 'ui-bootstrap-tpls-0.13.0.min.js' %}"></script>
+ <script src="{% static 'events/attendee.js' %}"></script>
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+
+<body>
+<div class="container"  ng-app="eventApp">
+ <!-- <pre>selected id= [[events.selectedId]]</pre> -->
+ 
+<div class="panel panel-default" ng-controller="attendeeController">
+  <!-- Default panel contents -->
+  <div class="panel-heading">
+  <div class="row">
+  <div class="col-md-2">
+  		<button type="button" 
+			class="btn btn-primary btn-sm" aria-label="Add" ng-click="add()">
+			<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+			Register New User
+			</button>
+  </div>
+  <div class="col-md-6">
+  <form class="form-inline">
+   
+    <div class="form-group">
+      <select class="form-control" ng-model="filterBy" ng-options="item.title for item in itemHeaders">
+      </select>
+      <p> filterBy: [[filterBy|json]] </p>
+      <input type="search" class="form-control" ng-model="searchStr" />
+      <button type="submit" class="btn btn-primary" ng-click="getList(searchStr)"> <span class="glyphicon glyphicon-search"></span></button>
+      <img src="{% static 'events/busy_indicator.gif' %}" alt="busy" ng-show="_isBusy"/> </img>
+    </div>
+   </form>
+   </div>
+  <div class="col-md-2 pull-right"> 
+    <small style="margin:0">Items Per Page:    <select
+            ng-model="itemsPerPage"
+            ng-options="size for size in itemsPerPageOptions"
+            ng-change="getList()">    </select>
+    Showing [[list.length]] of [[totalItems]]  items </small> 
+   </div> 
+
+  </div> <!--row -->
+  </div>  <!--panel heading -->
+  <!--
+   <div >
+    <input class="form-control" ng-model="query" placeholder="search">
+   </div> 
+   -->
+   
+   
+
+<div class="panel-body">
+<table class="table table-condensed table-bordered table-hover" >
+ <thead>
+	<tr>
+		<th>Action</th>
+
+		<th ng-repeat="header in itemHeaders" ng-click="sort(header)"
+			tooltip="[[header.tooltip]]" tooltip-append-to-body="true">
+			<span ng-show="sortPredicate==header.field && !sortReverse"
+			class="glyphicon glyphicon-chevron-up"> </span> <span ng-show="sortPredicate==header.field && sortReverse" class="glyphicon glyphicon-chevron-down"> </span> 
+			[[ header.title ]]
+		</th>
+	</tr>
+</thead>
+
+<tbody ng-repeat="item in list| filter:filterBy.field:query | orderBy:sortPredicate:sortReverse">
+<!--Display Mode -->
+<tr ng-if="!item._editMode && !item._addMode"
+	ng-class="{danger:(!item.registrationDate)}">
+	<td ng-if="item.registrationDate" >
+		<!--Action--> <button class="btn btn-success" aria-label="Print Badge"
+		ng-click="printBadge(item)">Print Badge</button> 
+	</td>
+	<td ng-if="!item.registrationDate">
+		<!--Action--> <button class="btn btn-primary" aria-label="Register Attendee"
+		ng-click="registerAttendee(item)">Register Attendee</button> 
+	</td>
+	<td>[[item.attendeeType.attendeeType]]</td>
+	<td>[[item.member.name]]</td>
+	<td>[[item.member.company]]</td>
+	<td>[[item.member.category]] </td>
+	<td>[[item.member.expDate | date:'MM/dd/yyyy']]</td>
+	<td>[[item.registrationDate | date:'MM/dd/yyyy']]</td>
+	<td>[[item.badgePrintDate | date:'MM/dd/yyyy']]</td>
+	<td>[[item.payment.amountCharged | currency]]</td>
+
+</tr>
+<!-- End Display Mode -->
+ </tbody>
+ </table>
+<alert ng-repeat="alert in alerts" type="[[alert.type]]" close="closeAlert($index)">[[alert.msg]]</alert>
+</div>
+  <div class="panel-footer">
+<!--  <div class="container"> -->
+  
+ <div class="row"> 
+   <div class="col-md-9"><pagination class="pagination pagination-sm" style="margin:0" direction-links="false" boundary-links="true" total-items="totalItems"  ng-model="currentPage" ng-change="pageChanged()" items-per-page="itemsPerPage" num-pages="numPages"></pagination>  </div>
+  <!-- <div class="col-md-2 pull-right"> <code>Items Per Page: [[itemsPerPage]] </code> </div> -->
+   <div class="col-md-3"> 
+    <small style="margin:0">Items Per Page:    <select
+            ng-model="itemsPerPage"
+            ng-options="size for size in itemsPerPageOptions"
+            ng-change="getList()">    </select>
+    Showing [[list.length]] of [[totalItems]]  items </small> 
+   </div> 
+<!--  </div> -->
+  </div> 
+  </div>  
+</div> <!-- End Attendee Controller -->
+
+
+</div> <!-- End Container -->
+</body>
+
