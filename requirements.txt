@@ -1,0 +1,7 @@
+dj-database-url==0.3.0
+Django==1.8.1
+gunicorn==19.3.0
+requests==2.3.0
+SQLAlchemy==1.0.4
+virtualenv==13.0.3
+whitenoise==1.0.6
