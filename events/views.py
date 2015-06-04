@@ -11,3 +11,10 @@ def attendee(request):
     #return render(request, 'usertrack/usertrack.html')
     return render_to_response('events/attendee.html')
     
+def attendeeType(request):
+    #return render(request, 'usertrack/usertrack.html')
+    return render_to_response('events/attendeetype.html')
+
+def memberCategory(request):
+    #return render(request, 'usertrack/usertrack.html')
+    return render_to_response('events/membercategory.html')

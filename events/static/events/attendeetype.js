@@ -1,7 +1,7 @@
 (function(){
 
 
-var app=angular.module('event-attendee', ['ui.bootstrap']);
+var app=angular.module('event-attendee-type', ['ui.bootstrap']);
 app.config(function($interpolateProvider){
         $interpolateProvider.startSymbol('[[').endSymbol(']]');
     });
@@ -12,21 +12,14 @@ app.config(function($interpolateProvider){
 
 app.controller('listController', function($scope,$http,$modal,$log) {
 	$scope.list=[];
-	$scope.listAttendeeType=[];
-	$scope.apiUrl='/api/event/attendee/';
-	$scope.apiUrlAttendeeType='/api/event/attendeetype/';
-	$log.debug('logging');
+	$scope.apiUrl='/api/event/attendeetype/'
+	$scope.adminMode=true;
 	
    // Sets List header, should be able to save code in html file
    $scope.itemHeaders=[
-                       {title:"Name",field:"fields.member.name",tooltip:"Attendee Name"}
-                       ,{title:"Attendee Type",field:"fields.attendeeType.attendeeType",tooltip:"Attendee Type"}
-                       ,{title:"Company",field:"fields.member.company",tooltip:"Company"}
-                       ,{title:"Title",field:"fields.member.position",tooltip:"Title"}
-                       ,{title:"Email",field:"fields.member.email",tooltip:"Email"}
-                       ,{title:"Badge Print Date",field:"fields.badgePrintDate",tooltip:"Badge print date if baage is printed"}
-                       ,{title:"Badge Pick Date",field:"fields.badgePickDate",tooltip:"Badge pick up date"}
-                       ,{title:"Registration Date",field:"fields.registrationDate",tooltip:"Registration Date"}
+                       {title:"ID",field:"pk"}
+                       ,{title:"Attendee Type",field:"fields.attendeeType",tooltip:"Attendee Type"}
+                       ,{title:"Price",field:"fields.price",tooltip:"Price for the event that attendee needs to pay"}
                        ];
 
    $scope.sort=function(header){
@@ -114,7 +107,7 @@ app.controller('listController', function($scope,$http,$modal,$log) {
     				method:'post',
                     url: $scope.apiUrl,
                     //transformRequest: transformRequestAsFormRequest,
-                    headers : { 'Content-Type': 'application/json','charset':'utf-8'},
+                    headers : { 'Content-Type': 'application/json','charset':'utf-8','X-CSRFToken':this.csrfToken},
                     //contentType: 'application/json; charset=utf-8',
                     //,"X-CSRFToken":this.csrfToken } ,
                     //headers: {"X-CSRFToken":this.csrfToken},x-www-form-urlencoded
@@ -209,41 +202,20 @@ app.controller('listController', function($scope,$http,$modal,$log) {
      
     $scope.add = function(){
       //push item being edited to a list to retrieve later if user cancels the edit. Use pk to retrieve the item later on
-     $scope._addMode=true;
-     
+     var item={};
+     item._editMode=true; 
      item._addMode=true; 
      item._edits={};
      item._edits.pk=0;
      item._edits.fields={};
      item.pk=0
+     $scope.list.push(item);
     // $scope.sortPredicate = item.pk;
     // $scope.sortReverse = false;
 
-     };
+     };    
      
-     //API get attendee type list
-     $scope.getListAttendeeType=function(){
-    	   
-    	   var url=$scope.apiUrlAttendeeType;
-    	   $log.debug('calling url'+url);
-    	   var request = $http({
-    	    				method:'get',
-    	                    url: url
-    	                    });
-    	    request.success(function(result,status){
-    	       log.debug(JSON.stringify(result));
-    	        if (status==200)
-    	          {
-    	            $scope.listAttendeeType=[];
-    	            $scope.listAttendeeType=result.data;
-    	          }  
-    	        });            
-    	   };
-
-     
-   //$scope.getList();
-    $log.debug('About to call get list');
-    $scope.getListAttendeeType();
+   $scope.getList();
    
    });
 

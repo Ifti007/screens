@@ -10,4 +10,16 @@ urlpatterns = [
     url(r'^usertrack/page/(?P<page_num>[0-9]+)/size/(?P<page_size>[0-9]+)$', views.usertrack, name='usertrack'),
     url(r'^usertrack/page/(?P<page_num>[0-9]+)/size/(?P<page_size>[0-9]+)/search/(?P<search_str>[A-Za-z0-9]*)$', views.usertrack, name='usertrack'),
     url(r'^usertrack/$', views.usertrack, name='usertrack'),
+
+    url(r'^event/attendeetype/$', views.attendeeType, name='attendeeType'),
+    url(r'^event/attendeetype/page/(?P<page_num>[0-9]+)$', views.attendeeType, name='attendeeType'),
+    url(r'^event/attendeetype/page/(?P<page_num>[0-9]+)/size/(?P<page_size>[0-9]+)$', views.attendeeType, name='attendeeType'),
+    url(r'^event/attendeetype/page/(?P<page_num>[0-9]+)/size/(?P<page_size>[0-9]+)/search/(?P<search_str>[A-Za-z0-9]*)$', views.attendeeType, name='attendeeType'),
+    
+    url(r'^event/membercategory/$', views.memberCategory, name='memberCategory'),
+    url(r'^event/membercategory/page/(?P<page_num>[0-9]+)$', views.memberCategory, name='memberCategory'),
+    url(r'^event/membercategory/page/(?P<page_num>[0-9]+)/size/(?P<page_size>[0-9]+)$', views.memberCategory, name='memberCategory'),
+    url(r'^event/membercategory/page/(?P<page_num>[0-9]+)/size/(?P<page_size>[0-9]+)/search/(?P<search_str>[A-Za-z0-9]*)$', views.memberCategory, name='memberCategory'),
+
+
 ]
