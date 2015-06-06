@@ -145,5 +145,10 @@ LOGGING = {
             'handlers': ['file'],
             'level': 'DEBUG',
         },
+        'events': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+        },
+
     }
 }

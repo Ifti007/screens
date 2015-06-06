@@ -4,9 +4,10 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
 from usertrack.models import USER_TRACKED, USER, APPLICATION
-from events.models import * 
+from events.models import attendee, attendeeType 
 
 from django.core.exceptions import ValidationError
+from django.db.models import Q  #For or queries
 # import json
 import json, math, decimal
 from django.core import serializers
@@ -15,7 +16,7 @@ from django.core import serializers
 import logging
 
 # Get an instance of a logger
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('api')
 
 """
 class DecimalEncoder(json.JSONEncoder):
@@ -208,9 +209,10 @@ def usertrack(request, page_num="1", page_size="20", search_str=None, order_by='
             return HttpResponse(s, content_type='application/json', status=400)
 
 @csrf_exempt  # exempt csrf temporarily        
-def attendeeType(request, page_num="1", page_size="20", search_str=None, order_by='pk', lDatabase='default'):
-    lModel = ATTENDEE_TYPE
+def attendee(request,model_name = 'attendeeType', page_num="1", page_size="20", search_str=None, order_by='pk', lDatabase='default'):
     #lDatabase = 'inguser'
+    mod = __import__('events.models',fromlist=model_name)
+    lModel = getattr(mod,model_name)
 
     if request.META['CONTENT_TYPE']: content_type = request.META['CONTENT_TYPE']
     
@@ -225,18 +227,22 @@ def attendeeType(request, page_num="1", page_size="20", search_str=None, order_b
         if search_str:  # need to work on search, it could be better.
             try:
                 logger.debug('Search string :' + search_str)
-                lModel = lModel.filter(attendeeType__icontains=search_str)
+                if model_name=='attendeeType':
+                    lModel = lModel.filter(attendeeType__icontains=search_str)
+                elif model_name=='attendee':
+                    lModel = lModel.filter(Q(firstName__icontains=search_str)|Q(lastName__icontains=search_str)|Q(email__icontains=search_str))
+                    
             except Exception as e:
                 logger.debug(e)
         total_row_count = lModel.count()
         page_num = int(page_num)
         page_size = int(page_size)
         total_pages = int(math.ceil(decimal.Decimal(total_row_count) / decimal.Decimal(page_size)))
-        logger.debug('total_row_count=' + str(total_row_count))
-        logger.debug('page_num=' + str(page_num))
+        #logger.debug('total_row_count=' + str(total_row_count))
+        #logger.debug('page_num=' + str(page_num))
         try:
             lModel = lModel.order_by(order_by)[(page_num - 1) * page_size:page_num * page_size]
-            logger.debug('lModel processed')
+            
         except:
             logger.debug('Error getting objects from ' + str(lModel))
         
@@ -249,7 +255,7 @@ def attendeeType(request, page_num="1", page_size="20", search_str=None, order_b
         meta['order_by'] = order_by
         meta = json.dumps(meta)
         s = '{"meta":' + meta + ',"data":' + s + '}'
-        logger.debug(s)
+        #logger.debug(s)
         
         return HttpResponse(s, content_type='application/json', status=200) 
     
@@ -267,11 +273,16 @@ def attendeeType(request, page_num="1", page_size="20", search_str=None, order_b
         logger.debug('Incoming data to POST')
         logger.debug(data['fields']) 
         lPk = data.get('pk', 0)  # gets pk from data, 0 if pk is not in data
-        if data['fields']: data = data['fields']
-        
+        if data.get('fields'): data = data['fields']
         logger.info('data:')
         logger.info(data)
-         
+        
+        
+        if data.get('attendeeType'):
+            logger.debug(data)
+            at = attendeeType(**data['attendeeType'])
+            data['attendeeType'] = at 
+ 
         currRow = lModel(**data)  # convert incoming data to model dictionary
         
         # For Update
@@ -284,22 +295,17 @@ def attendeeType(request, page_num="1", page_size="20", search_str=None, order_b
         try:
             logger.debug('Saving')
             currRow.save(using=lDatabase)
-            currRow = lModel.objects.using(lDatabase).get(pk=currRow.pk)  # we retrieve the row back so that we get correct formatting for serialization
+            #currRow = lModel.objects.using(lDatabase).get(pk=currRow.pk)  # we retrieve the row back so that we get correct formatting for serialization
             logger.debug(data)
             logger.debug(currRow)
             
             s = serializers.serialize('json', [currRow, ], use_natural_foreign_keys=True)  # not sure what will happen to decimal field here, keep an eye
             return HttpResponse(s, content_type='application/json', status=200)
 
-        except ValidationError as e:
-            logger.debug('Exception Validation Error:')
+        except (ValidationError , Exception) as e:
+            logger.debug('Exception handler:')
             logger.debug(e)
-            s = json.dumps({"error":str(e.message)})
-            return HttpResponse(s, content_type='application/json', status=400)
-        except Exception as e:
-            logger.debug('Exception: ')
-            logger.debug(e)
-            s = json.dumps({"error":str(e.message)})
+            s = json.dumps({"error":e})
             return HttpResponse(s, content_type='application/json', status=400)
         
     elif request.method == 'DELETE':

@@ -1,29 +1,184 @@
 (function(){
 
 
-var app=angular.module('event-attendee', ['ui.bootstrap']);
+var app=angular.module('event-attendee', ['ui.bootstrap','ngCookies']);
 app.config(function($interpolateProvider){
         $interpolateProvider.startSymbol('[[').endSymbol(']]');
     });
     
 
+app.controller('add-controller', function($scope,$http,$cookies,$log) {
+	$scope.apiUrlAttendeeType='/api/events/attendeeType/';
+	$scope.apiUrl='/api/events/attendee/';
+	$scope.chargeUrl='/charge/';
+	$scope.publishableKey='pk_test_wL6PEnRCuKLkocmlHOAHLINg';
+	$scope.add = function(){
+		$scope.item={}
+		$scope.item.amount=0;
+		$scope.item.fields={};
+		$scope.payButtonText='Save';
+		$scope.isSuccess=false;
+		$scope.message=null;
+		$scope.item.message=null;
+		$scope.item.fields.attendeeType={};
+	}
+	$scope.add();
+	
+    //API get attendee type list
+    $scope.getAttendeeTypes = function(){
+       $scope.attendeeTypes = [];
+   	   var url=$scope.apiUrlAttendeeType;
+   	$http.get(url).
+    success(function(data, status, headers, config) {
+      // this callback will be called asynchronously
+      // when the response is available
+           $scope.attendeeTypes=[];
+	            $scope.attendeeTypes=data.data;
+
+    }).
+    error(function(data, status, headers, config) {
+      // called asynchronously if an error occurs
+      // or server returns response with an error status.
+    });
+   	};
+   	
+   	$scope.getAttendeeTypes();
+   	
+	$scope.onAttendeeTypeSelect=function($item, $model, $label) {
+		 console.log("onAttendeeTypeSelect($item, $model, $label) ");
+		 console.log($item);
+		 $scope.item.fields.attendeeType.pk=$item.pk;
+		 $scope.item.fields.attendeeType.name = $item.fields.name;
+		 $scope.item.amount = $item.fields.price;
+		 console.log($item);
+		 console.log($model);
+		 //console.log($label);
+		 
+		};
+		
+	$scope.save = function(){
+		if ($scope.amount > 0) 
+			$scope.pay($scope.amount);
+		else
+			$scope.registerAttendee();
+	};
+	
+	$scope.registerAttendee = function(){
+		$log.debug('registering attendee');
+		$scope.payButtonText='Registering';
+		$log.debug($scope.apiUrl);
+		
+		
+		var request = $http({
+			method:'post',
+            url: $scope.apiUrl,
+            headers : { "X-CSRFToken":$cookies.get('csrftoken'),'Content-Type': 'application/json' } ,  //,"X-CSRFToken":this.csrfToken
+            //headers: {"X-CSRFToken":$cookies.get('csrftoken'),'Content-Type':'application/x-www-form-urlencoded'},
+            data: $scope.item
+            });
+		
+		request.success(function(result,status) {
+			$log.debug('post success registration');
+			$log.debug(result);
+			$log.debug(status);
+			if (status==200)
+				{
+				$scope.isSuccess=true;
+				$scope.payButtonText = "Attendee Registered";
+				$scope.result = result;
+
+				}
+			else {
+				$scope.isSuccess=false;
+				$scope.message = "Attendee Not Registered";
+			}
+		}).error(function(result,status) {
+          $scope.isSuccess=false;
+          $scope.message = "Attendee Not Registered";
+		}); 
+
+	};
+
+
+	$scope.pay = function(amount){
+		$scope.payButtonText='Charging';
+		var handler = StripeCheckout
+		.configure({
+			key : $scope.publishableKey,
+			image : '/img/documentation/checkout/marketplace.png',
+			token : function(token) {
+				$log.debug('inside token');
+				$log.debug(token);
+				amount = amount * 100 //to convert to cents 
+				$scope.item.stripeToken=token.id;
+				$scope.item.stripeEmail=token.email;
+				var data = {};
+				data.amount=amount;
+				data.stripeToken=token.id;
+				data.stripeEmail=token.email;
+				
+				var request = $http({
+    				method:'post',
+                    url: $scope.chargeUrl,
+                    headers : { "X-CSRFToken":$cookies.get('csrftoken'),'Content-Type': 'application/json' } ,  //,"X-CSRFToken":this.csrfToken
+                    //headers: {"X-CSRFToken":$cookies.get('csrftoken'),'Content-Type':'application/x-www-form-urlencoded'},
+                    data: data
+                    });
+				
+				request.success(function(result,status) {
+					$log.debug('post success');
+					$log.debug(result);
+					$log.debug(status);
+					if (status==200)
+						{
+						$scope.isSuccess=true;
+						$scope.registerAttendee();
+						$scope.payButtonText = "Amount Charged";
+						$scope.item.message = "Amount Charged";
+						$scope.result = result;
+
+						}
+					else {
+						$scope.isSuccess=false;
+						$scope.item.message = "Amount Not Charged and attendee is not registered";
+					}
+				}).error(function(result,status) {
+                  $scope.isSuccess=false;
+                  $scope.item.message = "Amount Not Charged and attendee is not registered";
+				});
+				// Use the token to create the charge with a server-side script.
+				// You can access the token ID with `token.id`
+			}
+		});
+		$log.debug(handler);
+					handler
+							.open({
+								name : 'dapps.us Events',
+								description : 'Open Forum 2015 Registration',
+								amount : $scope.item.amount * 100
+							});
+					
+				};
+				
+});
 
 // Sets List header, should be able to save code in html file
 
-app.controller('listController', function($scope,$http,$modal,$log) {
+app.controller('list-controller', function($scope,$http,$modal,$log) {
 	$scope.list=[];
 	$scope.listAttendeeType=[];
-	$scope.apiUrl='/api/event/attendee/';
-	$scope.apiUrlAttendeeType='/api/event/attendeetype/';
+	$scope.apiUrl='/api/events/attendee/';
+	$scope.apiUrlAttendeeType='/api/events/attendeeType/';
 	$log.debug('logging');
 	
    // Sets List header, should be able to save code in html file
    $scope.itemHeaders=[
-                       {title:"Name",field:"fields.member.name",tooltip:"Attendee Name"}
-                       ,{title:"Attendee Type",field:"fields.attendeeType.attendeeType",tooltip:"Attendee Type"}
-                       ,{title:"Company",field:"fields.member.company",tooltip:"Company"}
-                       ,{title:"Title",field:"fields.member.position",tooltip:"Title"}
-                       ,{title:"Email",field:"fields.member.email",tooltip:"Email"}
+                       {title:"First Name",field:"fields.firstName",tooltip:"Attendee First Name"}
+                       ,{title:"Last Name",field:"fields.lastName",tooltip:"Attendee Last Name"}
+                       ,{title:"Attendee Type",field:"fields.attendeeType.name",tooltip:"Attendee Type"}
+                       ,{title:"Company",field:"fields.company",tooltip:"Company"}
+                       ,{title:"Title",field:"fields.title",tooltip:"Title"}
+                       ,{title:"Email",field:"fields.email",tooltip:"Email"}
                        ,{title:"Badge Print Date",field:"fields.badgePrintDate",tooltip:"Badge print date if baage is printed"}
                        ,{title:"Badge Pick Date",field:"fields.badgePickDate",tooltip:"Badge pick up date"}
                        ,{title:"Registration Date",field:"fields.registrationDate",tooltip:"Registration Date"}
@@ -33,7 +188,6 @@ app.controller('listController', function($scope,$http,$modal,$log) {
    	   $scope.sortPredicate = header.field;
    	   $scope.sortReverse = ! $scope.sortReverse;
    };
-
    /* Pagination */
    $scope.itemsPerPage=10;
    $scope.itemsPerPageOptions=[5,10,15,20,25,100];
@@ -50,7 +204,8 @@ app.controller('listController', function($scope,$http,$modal,$log) {
      { type: 'success', msg: 'Well done! You successfully read this important alert message.' }
       ];
    $scope.alerts = [];
-   $scope.addAlert = function(msg,type='info') {
+   $scope.addAlert = function(msg,type) {
+	      				type = type || 'info';
                           $scope.alerts.push({msg: msg,type:type});
                           };
 
@@ -61,7 +216,8 @@ app.controller('listController', function($scope,$http,$modal,$log) {
     /* End Alerts */
     /*API: Get the data */
     
-   $scope.getList=function(pageNum=1){
+   $scope.getList=function(pageNum){
+	   pageNum = pageNum || 1;
    $scope._isBusy=true;  //Busy indicator
    var url=$scope.apiUrl+'page/'+pageNum||1;
     if ($scope.itemsPerPage)
@@ -97,153 +253,14 @@ app.controller('listController', function($scope,$http,$modal,$log) {
 
           }  
         $scope._isBusy=false;   
-        }).error(function() {$scope._isBusy=false; });            
+        }).error(function() {$scope._isBusy=false; });
+    
+    //$scope.getList();
 
     
    };
-   
-   /*API: Save Data */
-   $scope.save=function(item){
-     item._isBusy=true;
-     var currItem=angular.copy(item._edits);
-     //currItem.pk=item.pk; //inject pk here so that it can be saved in database
-     $log.debug('Saving');
-     $log.debug(currItem);
- 
-     var request = $http({
-    				method:'post',
-                    url: $scope.apiUrl,
-                    //transformRequest: transformRequestAsFormRequest,
-                    headers : { 'Content-Type': 'application/json','charset':'utf-8'},
-                    //contentType: 'application/json; charset=utf-8',
-                    //,"X-CSRFToken":this.csrfToken } ,
-                    //headers: {"X-CSRFToken":this.csrfToken},x-www-form-urlencoded
-                    data: item._edits
-                    });
-     request.success(function(data,status){
-     $log.debug('status='+status);
-        // Reset line item with 
-        //$scope.addAlert('Saved','success');
-        $scope.addAlert('Saved','success');
-        currItem=angular.copy(item._edits.fields)
-        $log.debug('currItem');
-        $log.debug(currItem);
-        $log.debug('data.fields:');
-        $log.debug(data[0].fields);
 
-        if (data[0].fields)
-         {
-          $log.debug('In data.fields');
-          $log.debug(item.fields);
-          item.fields=data[0].fields;
-          item.pk=data[0].pk;
-         }
-        else
-         {
-          $log.debug('In else data.fields');
-          $log.debug(currItem);
-          item.fields=currItem;
-         }
-         $log.debug(data);
-         item._isBusy=false;
-         item._addMode=false;
-         item._editMode=false;
-         item._edits={};
 
-        })
-        .error(function(data,status)
-          {
-           item._isBusy=false;
-           $log.debug('save error: '+data);
-           $log.debug(data);
-           $scope.addAlert('Error Saving: '+data.error||'','danger');
-          });
-     };
-     
-     
-     /*API: Delete Item */
-   $scope.deleteItem=function(item){
-     currItem=item;
-           item._isBusy=true;
-           $log.debug('Deleting');
-            var request = $http({
-    				method:'delete',
-                    url: $scope.apiUrl,
-                    //transformRequest: transformRequestAsFormRequest,
-                    headers : { 'Content-Type': 'application/json',"X-CSRFToken":this.csrfToken } ,
-                    //headers: {"X-CSRFToken":this.csrfToken},x-www-form-urlencoded
-                    data: currItem
-                    });
-     		request.success(function(data,status){
-     		$log.debug('delete return http status='+status);
-     		// Reset line item with 
-     		item._isBusy=false;
-     		$log.debug($scope.list.indexOf(item));
-     		$scope.list.splice($scope.list.indexOf(item),1);
-     		}).error(function(){item._isBusy=false;});
-         };
-
-    $scope.edit = function(item){
-     var currItem=angular.copy(item);
-     item._edits={};
-     item._edits=currItem;
-     $log.debug('item._edits');
-     $log.debug(item._edits);
-     item._editMode=true;
-    };    
-
-    $scope.undo = function(item){
-    item._edits={};
-    item._editMode=false;
-    if (item._addMode){
-       index = $scope.list.indexOf(item);
-       $scope.list.splice(index,1);
-       item._addMode=false;
-       }
-     };
-     
-    $scope.revert = function(item){
-     item._edits={};
-     item._editMode=false;
-     };    
-     
-    $scope.add = function(){
-      //push item being edited to a list to retrieve later if user cancels the edit. Use pk to retrieve the item later on
-     $scope._addMode=true;
-     
-     item._addMode=true; 
-     item._edits={};
-     item._edits.pk=0;
-     item._edits.fields={};
-     item.pk=0
-    // $scope.sortPredicate = item.pk;
-    // $scope.sortReverse = false;
-
-     };
-     
-     //API get attendee type list
-     $scope.getListAttendeeType=function(){
-    	   
-    	   var url=$scope.apiUrlAttendeeType;
-    	   $log.debug('calling url'+url);
-    	   var request = $http({
-    	    				method:'get',
-    	                    url: url
-    	                    });
-    	    request.success(function(result,status){
-    	       log.debug(JSON.stringify(result));
-    	        if (status==200)
-    	          {
-    	            $scope.listAttendeeType=[];
-    	            $scope.listAttendeeType=result.data;
-    	          }  
-    	        });            
-    	   };
-
-     
-   //$scope.getList();
-    $log.debug('About to call get list');
-    $scope.getListAttendeeType();
    
    });
 

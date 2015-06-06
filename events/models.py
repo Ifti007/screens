@@ -31,11 +31,23 @@ class MEMBER(models.Model):
 	class Meta:
 		db_table = 'MEMBER'
 
-class ATTENDEE_TYPE(models.Model):
+		
+
+class attendeeType(models.Model):
 	id = models.AutoField(primary_key=True,db_column='ATTENDEE_TYPE_ID')
-	attendeeType = models.CharField(max_length=128,unique=True,db_column='ATTENDEE_TYPE')
+	name = models.CharField(max_length=128,unique=True,db_column='ATTENDEE_TYPE')
 	price = models.DecimalField( max_digits=7, decimal_places=2,db_column='PRICE')
 	
+	def natural_key(self):
+		ret={}
+		ret['id'] = self.id
+		ret['name'] = self.name
+		#ret['price'] = self.price
+		return ret
+				
+	def __str__(self):
+		return self.name + ':' + str(self.price)
+				
 	class Meta:
 		db_table = 'ATTENDEE_TYPE'
 		
@@ -58,18 +70,27 @@ class PAYMENT(models.Model):
 	class Meta:
 		db_table = 'PAYMENT'
 		
-class ATTENDEE(models.Model):
-	attendeeId = models.IntegerField(primary_key=True,db_column='ATTENDEE_ID')
-	attendeeType = models.ForeignKey(ATTENDEE_TYPE,db_column='ATTENDEE_TYPE_ID')
-	member = models.OneToOneField(MEMBER,db_column='MEMBER_ID')
-	payments = models.ForeignKey(PAYMENT,db_column='PAYMENT_ID')
-	badgePrintDate = models.DateTimeField(db_column='BADGE_PRINT_DATE')
-	badgePrintCount = models.IntegerField(db_column='BADGE_PRINT_COUNT')
-	registrationDate = models.DateTimeField(db_column='REGISTRATION_DATE')
+	
+class attendee(models.Model):
+	attendeeType = models.ForeignKey(attendeeType,db_column='ATTENDEE_TYPE_ID')
+	memberId = models.IntegerField(db_column='MEMBER_ID',null=True)
+	amount = models.DecimalField(max_digits=7,decimal_places=2,db_column='PAYMENT_ID',default=0)
+	firstName = models.CharField(max_length=128,db_column='FIRST_NAME')
+	lastName = models.CharField(max_length=128,db_column='LAST_NAME')
+	email = models.CharField(max_length=128,db_column='EMAIL',null=True)
+	company = models.CharField(max_length=128,db_column='COMPANY',null=True)
+	title = models.CharField(max_length=128,db_column='TITLE',null=True)
+	badgePrintDate = models.DateTimeField(db_column='BADGE_PRINT_DATE',null=True)
+	badgePrintCount = models.IntegerField(db_column='BADGE_PRINT_COUNT',null=True)
+	registrationDate = models.DateTimeField(db_column='REGISTRATION_DATE',null=True)
+	
+	def __str__(self):
+		return self.firstName + ' ' + self.lastName
+
 	
 	class Meta:
 		db_table = 'ATTENDEE'
-	
+		
 			    
 
 	

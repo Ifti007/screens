@@ -12,13 +12,13 @@ app.config(function($interpolateProvider){
 
 app.controller('listController', function($scope,$http,$modal,$log) {
 	$scope.list=[];
-	$scope.apiUrl='/api/event/attendeetype/'
+	$scope.apiUrl='/api/events/attendeeType/'
 	$scope.adminMode=true;
 	
    // Sets List header, should be able to save code in html file
    $scope.itemHeaders=[
                        {title:"ID",field:"pk"}
-                       ,{title:"Attendee Type",field:"fields.attendeeType",tooltip:"Attendee Type"}
+                       ,{title:"Attendee Type",field:"fields.name",tooltip:"Attendee Type"}
                        ,{title:"Price",field:"fields.price",tooltip:"Price for the event that attendee needs to pay"}
                        ];
 
@@ -43,7 +43,8 @@ app.controller('listController', function($scope,$http,$modal,$log) {
      { type: 'success', msg: 'Well done! You successfully read this important alert message.' }
       ];
    $scope.alerts = [];
-   $scope.addAlert = function(msg,type='info') {
+   $scope.addAlert = function(msg,type) {
+	      				type = type || 'info';
                           $scope.alerts.push({msg: msg,type:type});
                           };
 
@@ -54,7 +55,8 @@ app.controller('listController', function($scope,$http,$modal,$log) {
     /* End Alerts */
     /*API: Get the data */
     
-   $scope.getList=function(pageNum=1){
+   $scope.getList=function(pageNum){
+	   pageNum = pageNum || 1;
    $scope._isBusy=true;  //Busy indicator
    var url=$scope.apiUrl+'page/'+pageNum||1;
     if ($scope.itemsPerPage)
