@@ -213,6 +213,8 @@ def attendee(request,model_name = 'attendeeType', page_num="1", page_size="20", 
     #lDatabase = 'inguser'
     mod = __import__('events.models',fromlist=model_name)
     lModel = getattr(mod,model_name)
+    logger.debug('request:')
+    logger.debug(request)
 
     if request.META.get('CONTENT_TYPE'): content_type = request.META['CONTENT_TYPE']
     
