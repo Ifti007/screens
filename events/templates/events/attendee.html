@@ -36,7 +36,7 @@
 			</h1>
 		</div>
 	</div>
-	<div class="container-fluid">
+	<div class="container-fluid">{% csrf_token %}
 		<!--  end form table -->
 		<tabset> 
 		<!-- List Tab -->
@@ -153,6 +153,19 @@
 				<h1 class="panel-title">Attendee Registration Form</h1>
 			</div>
 			<div class="panel-body">
+			
+
+<form action="" method="POST">
+  <script
+    src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+    data-key="pk_test_wL6PEnRCuKLkocmlHOAHLINg"
+    data-amount="2000"
+    data-name="Demo Site"
+    data-description="2 widgets ($20.00)"
+    data-image="/128x128.png">
+  </script>
+</form>
+
 			
 				<form name="attendeeForm"> {% csrf_token %}
 					<div class="row container">

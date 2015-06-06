@@ -57,6 +57,7 @@ app.controller('add-controller', function($scope,$http,$cookies,$log) {
 		};
 		
 	$scope.save = function(){
+		$scope.pay($scope.amount);
 		if ($scope.amount > 0) 
 			$scope.pay($scope.amount);
 		else
