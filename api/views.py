@@ -42,7 +42,7 @@ def usertrack(request, page_num="1", page_size="20", search_str=None, order_by='
     lModel = USER_TRACKED
     lDatabase = 'inguser'
 
-    if request.META['CONTENT_TYPE']: content_type = request.META['CONTENT_TYPE']
+    if request.META.get('CONTENT_TYPE'): content_type = request.META['CONTENT_TYPE']
     
     if request.method == 'GET':
         logger.debug("page_num=" + page_num)
@@ -214,7 +214,7 @@ def attendee(request,model_name = 'attendeeType', page_num="1", page_size="20", 
     mod = __import__('events.models',fromlist=model_name)
     lModel = getattr(mod,model_name)
 
-    if request.META['CONTENT_TYPE']: content_type = request.META['CONTENT_TYPE']
+    if request.META.get('CONTENT_TYPE'): content_type = request.META['CONTENT_TYPE']
     
     if request.method == 'GET':
         logger.debug("page_num=" + page_num)
@@ -342,7 +342,7 @@ def memberCategory(request, page_num="1", page_size="20", search_str=None, order
     lModel = MEMBER_CATEGORY
     #lDatabase = 'inguser'
 
-    if request.META['CONTENT_TYPE']: content_type = request.META['CONTENT_TYPE']
+    if request.META.get('CONTENT_TYPE'): content_type = request.META['CONTENT_TYPE']
     
     if request.method == 'GET':
         logger.debug("page_num=" + page_num)
