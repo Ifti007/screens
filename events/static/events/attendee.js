@@ -106,7 +106,7 @@ app.controller('add-controller', function($scope,$http,$cookies,$log) {
 		var handler = StripeCheckout
 		.configure({
 			key : $scope.publishableKey,
-			image : '/img/documentation/checkout/marketplace.png',
+			image : '/events/static/events/open_logo.png',
 			token : function(token) {
 				$log.debug('inside token');
 				$log.debug(token);
