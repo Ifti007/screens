@@ -57,9 +57,9 @@ app.controller('add-controller', function($scope,$http,$cookies,$log) {
 		};
 		
 	$scope.save = function(){
-		$scope.pay($scope.amount);
-		if ($scope.amount > 0) 
-			$scope.pay($scope.amount);
+		//$scope.pay($scope.item.amount);
+		if ($scope.item.amount > 0) 
+			$scope.pay($scope.item.amount);
 		else
 			$scope.registerAttendee();
 	};
