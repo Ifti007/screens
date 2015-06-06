@@ -25,7 +25,7 @@ def badges(request):
     
     #data = attendee.objects.exclude(badgePrintDate__isnull=True).exclude(badgePrintDate__exact='')
     data={}
-    data = models.attendee.objects.filter(badgePrintDate__isnull=True)
+    data = models.attendee.objects.filter(badgePrintDate__isnull=True)[0:7]
     #logger.debug('Badges data:')
     #logger.debug(data)
     for s in data:
@@ -37,6 +37,17 @@ def badges(request):
     if request.method == 'GET':
         return render_to_response(response_html,{'data':data}
                                   ,context_instance=RequestContext(request))
+
+@csrf_exempt
+def badgeReprint(request,id):
+    try:
+        s = models.attendee.objects.get(id=id)
+        s.badgePrintDate=None
+        s.save()
+        return HttpResponse(json.dumps({'message':'Successful'}), content_type='application/json', status=200)
+    except Exception as e:
+        s = json.dumps({"error":e})
+        return HttpResponse(s, content_type='application/json', status=400)
 
 
 def attendee(request):

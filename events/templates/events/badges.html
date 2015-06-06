@@ -1,0 +1,59 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<head>
+<title>Badge Printing</title>
+<script type="text/javascript" src="{% static 'events/jquery-barcode.min.js' %}"></script>
+<script type="text/javascript">
+$( document ).ready(function() {
+    var barid = $(".barcode-id").text();
+    $(".barcode").barcode(barid, "ean8",{barWidth:2, barHeight:30});
+});
+</script> 
+<style>
+.cardstyle { width:500px; height:280px; border:2px dotted black; font-family:Verdana, Geneva, sans-serif; font-size:14px; overflow:hidden; position:relative; }
+
+.cardstyle .top {  height:21%; width:96%; padding:2%; }
+.cardstyle .top .logo { float:left; height:100%; width:60%; position:relative; overflow:hidden; min-height:50px }
+.cardstyle .top .logo img { width:auto; max-height:100%; display:block; }
+.cardstyle .top .date { float:right; width:40%; text-align:right; }
+
+.cardstyle .middle { height:50%; width:100%; text-align:center; }
+.cardstyle .middle .category { font-size:18px; padding-bottom:2%; padding-top:2%; }
+.cardstyle .middle .title { font-size:20px; padding-bottom:1%; }
+.cardstyle .middle .name { font-size:28px; font-weight:bold;  }
+
+.cardstyle .bottom { height:21%; width:96%; text-align:center; }
+.cardstyle .bottom .barcode {  text-align:center; width: 50%; margin: 0 auto; }
+.cardstyle .bottom .barcode-id { display:none; }
+
+</style>
+</head>
+<body>
+<table>
+  <tr>
+  {% for items in data %}
+   <td>
+    <div class="cardstyle">
+    <div class="top">
+    <div class="logo"><img src="{% static 'events/open_logo.png' %}" alt="OPEN"/></div>
+    <div class="date">Jun 06, 2015</div>
+    </div>
+        <div class="middle">
+        <div class="category">{{ items.attendeeType.name }}</div>
+        <div class="name">{{items.firstName}} {{items.lastName}}</div>
+        <div class="title">{{ items.title}}, {{items.company}}</div>
+    </div>
+    <div class="bottom">
+        <div class="barcode"></div>     
+        <div class="barcode-id">{{items.id}}</div>   
+    </div>   
+</div>
+   </td>
+     {% if forloop.counter|divisibleby:2 %}
+      </tr>
+      <tr>
+     {% endif %}
+   {% endfor %}
+   </tr>
+</table>
+</body>

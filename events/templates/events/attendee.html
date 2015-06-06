@@ -88,6 +88,7 @@
 								class="glyphicon glyphicon-chevron-down"> </span> [[
 								header.title ]]
 							</th>
+							<th><a href="/events/badges/" class="btn-btn-success">Print Badges</a></th>
 						</tr>
 					</thead>
 
@@ -95,6 +96,7 @@
 						ng-repeat="item in list| filter:filterBy.field:query | orderBy:sortPredicate:sortReverse">
 						<!--Display Mode -->
 						<tr ng-if="!item._editMode && !item._addMode">
+						    <td class="col-xs-1">[[item.pk ]]</td>
 							<td class="col-sm-1">[[item.fields.firstName ]]</td>
 							<td class="col-sm-1">[[item.fields.lastName ]]</td>
 							<td class="col-sm-1">[[item.fields.attendeeType.name]]</td>
@@ -103,7 +105,8 @@
 							<td class="col-sm-1">[[item.fields.email]]</td>
 							<td class="col-sm-1">[[item.fields.badgePrintDate]]</td>
 							<td class="col-sm-1">[[item.fields.badgePickDate]]</td>
-							<td class="col-sm-1">[[item.fields.badgeRegistrationDate]]</td>
+							<!-- <td class="col-sm-1">[[item.fields.badgeRegistrationDate]]</td>  -->
+							<td> <button ng-disabled="!item.fields.badgePrintDate" class="btn btn-warning" ng-click="badgeReprint(item)">Reprint Badge Check</td>
 						</tr>
 						<!-- End Display Mode -->
 

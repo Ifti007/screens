@@ -169,11 +169,13 @@ app.controller('list-controller', function($scope,$http,$modal,$log) {
 	$scope.listAttendeeType=[];
 	$scope.apiUrl='/api/events/attendee/';
 	$scope.apiUrlAttendeeType='/api/events/attendeeType/';
+	$scope.apiUrlBadgeReprint='/events/badgereprint/'
 	$log.debug('logging');
 	
    // Sets List header, should be able to save code in html file
    $scope.itemHeaders=[
-                       {title:"First Name",field:"fields.firstName",tooltip:"Attendee First Name"}
+                       {title:"id",field:"pk"}
+                       ,{title:"First Name",field:"fields.firstName",tooltip:"Attendee First Name"}
                        ,{title:"Last Name",field:"fields.lastName",tooltip:"Attendee Last Name"}
                        ,{title:"Attendee Type",field:"fields.attendeeType.name",tooltip:"Attendee Type"}
                        ,{title:"Company",field:"fields.company",tooltip:"Company"}
@@ -181,7 +183,7 @@ app.controller('list-controller', function($scope,$http,$modal,$log) {
                        ,{title:"Email",field:"fields.email",tooltip:"Email"}
                        ,{title:"Badge Print Date",field:"fields.badgePrintDate",tooltip:"Badge print date if baage is printed"}
                        ,{title:"Badge Pick Date",field:"fields.badgePickDate",tooltip:"Badge pick up date"}
-                       ,{title:"Registration Date",field:"fields.registrationDate",tooltip:"Registration Date"}
+                       //,{title:"Registration Date",field:"fields.registrationDate",tooltip:"Registration Date"}
                        ];
 
    $scope.sort=function(header){
@@ -214,7 +216,33 @@ app.controller('list-controller', function($scope,$http,$modal,$log) {
        };
     
     /* End Alerts */
-    /*API: Get the data */
+    /*API reprint badge */
+       $scope.badgeReprint = function(item){
+    	   $log.debug('Reprint Badge');
+    	   $log.debug($scope.apiUrlBadgeReprint+item.pk);
+   		var request = $http({
+			method:'post',
+            url: $scope.apiUrlBadgeReprint+item.pk+'/',
+            headers : { 'Content-Type': 'application/json' } ,  //,"X-CSRFToken":this.csrfToken
+            //headers: {"X-CSRFToken":$cookies.get('csrftoken'),'Content-Type':'application/x-www-form-urlencoded'},
+            data: $scope.item
+            });
+		
+		request.success(function(result,status) {
+			if (status==200)
+				{
+				item.fields.badgePrintDate=null;
+				}
+			else {
+			    $log.debug('Unable to set badge to reprint');
+			}
+		}).error(function(result,status) {
+			$log.debug('Unable to set badge to reprint');
+		}); 
+    	   
+       };
+       
+     /*API: Get the data */
     
    $scope.getList=function(pageNum){
 	   pageNum = pageNum || 1;
