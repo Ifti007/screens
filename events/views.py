@@ -80,6 +80,7 @@ def attendeeCharge(request):
         # Get the credit card details submitted by the form
         token = data.get('stripeToken')
         amount = data.get('amount',0)
+        email = data.get('stripeEmail','')
         
         # Create the charge on Stripe's servers - this will charge the user's card
         try:
@@ -87,7 +88,8 @@ def attendeeCharge(request):
                                           amount=amount, # amount in cents, again
                                           currency="usd",
                                           source=token,
-                                          description="charge for amount"
+                                          receipt_email=email,
+                                          description="Open Forum 2015"
                                           )
             msg='Card was successfully charged'
             status=200
