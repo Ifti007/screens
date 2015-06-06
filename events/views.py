@@ -72,7 +72,9 @@ def attendeeCharge(request):
             data = request.POST
         # Set your secret key: remember to change this to your live secret key in production
         # See your keys here https://dashboard.stripe.com/account/apikeys
-        stripe.api_key = "sk_test_MOTIi9CNcj88J1V9Nys8V6am"
+        
+        #stripe.api_key = "sk_test_MOTIi9CNcj88J1V9Nys8V6am" -- Test 
+        stripe.api_key = "sk_live_0OZFn5fmVgdv2UJa8hHcQiDs"  #Live
         #post = post.decode()
         logger.debug(data) 
         # Get the credit card details submitted by the form

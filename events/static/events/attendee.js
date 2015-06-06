@@ -11,7 +11,8 @@ app.controller('add-controller', function($scope,$http,$cookies,$log) {
 	$scope.apiUrlAttendeeType='/api/events/attendeeType/';
 	$scope.apiUrl='/api/events/attendee/';
 	$scope.chargeUrl='/events/attendee/charge/';
-	$scope.publishableKey='pk_test_wL6PEnRCuKLkocmlHOAHLINg';
+	//$scope.publishableKey='pk_test_wL6PEnRCuKLkocmlHOAHLINg'; --Test
+	$scope.publishableKey='pk_live_daNgar96mhiWN4LWfpPOsxYO';  //Live
 	$scope.add = function(){
 		$scope.item={}
 		$scope.item.amount=0;
