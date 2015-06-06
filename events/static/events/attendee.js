@@ -10,7 +10,7 @@ app.config(function($interpolateProvider){
 app.controller('add-controller', function($scope,$http,$cookies,$log) {
 	$scope.apiUrlAttendeeType='/api/events/attendeeType/';
 	$scope.apiUrl='/api/events/attendee/';
-	$scope.chargeUrl='/charge/';
+	$scope.chargeUrl='/events/attendee/charge/';
 	$scope.publishableKey='pk_test_wL6PEnRCuKLkocmlHOAHLINg';
 	$scope.add = function(){
 		$scope.item={}
