@@ -56,7 +56,7 @@ app.controller('main', function($scope,$http,$cookies,$log,$modal) {
 	$scope.apiUrlAttendeeType='/api/events/attendeeType/';
 	$scope.apiUrl='/api/stall/';
 	$scope.chargeUrl='/api/charge/';
-	$scope.publishableKey='pk_test_wL6PEnRCuKLkocmlHOAHLINg'; //Test
+	//$scope.publishableKey='pk_test_wL6PEnRCuKLkocmlHOAHLINg'; //Test
 	//$scope.publishableKey='pk_live_daNgar96mhiWN4LWfpPOsxYO';  //Live
 	
 	$scope.totalAmount = 0.00;
@@ -111,6 +111,7 @@ app.controller('main', function($scope,$http,$cookies,$log,$modal) {
 	    	$log.debug(result);
 	    	if (result){
 	    	  $scope.lastOrder=[];
+	    	  $scope.lastOrder.push('$'+$scope.totalAmount.toString());
 	    	  for (var i=0; i< $scope.items.length; i++){
 	    		  if ($scope.items[i].qty>0)
 	    			  {
