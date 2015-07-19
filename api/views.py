@@ -469,7 +469,7 @@ def memberCategory(request, page_num="1", page_size="20", search_str=None, order
 def paymentCharge(request):
     #response_html = 'events/attendee.html'
     #logger.debug('Attendee view')
-    if request.META['CONTENT_TYPE']: content_type = request.META['CONTENT_TYPE']
+    content_type = request.META.get('CONTENT_TYPE')
     if request.method == 'POST':
         data = {}
         if 'x-www-form-urlencoded' in content_type or 'application/json' in content_type:
