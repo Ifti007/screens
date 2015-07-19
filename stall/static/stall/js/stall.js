@@ -143,7 +143,7 @@ app.controller('chargeModalCtrl', function ($scope, $modalInstance,$log,$http,$c
 			var request = $http({
 				method:'post',
                 url: $scope.chargeUrl,
-                headers : { "X-CSRFToken":$cookies.get('csrftoken'),'Content-Type': 'application/json' } ,  //,"X-CSRFToken":this.csrfToken
+                headers : { "X-CSRFToken":$cookies.['csrftoken'],'Content-Type': 'application/json' } ,  //,"X-CSRFToken":this.csrfToken
                 //headers: {"X-CSRFToken":$cookies.get('csrftoken'),'Content-Type':'application/x-www-form-urlencoded'},
                 data: data
                 });
