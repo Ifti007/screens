@@ -469,6 +469,7 @@ def memberCategory(request, page_num="1", page_size="20", search_str=None, order
 def paymentCharge(request):
     #response_html = 'events/attendee.html'
     #logger.debug('Attendee view')
+    logger.debug(request)
     content_type = request.META.get('CONTENT_TYPE')
     if request.method == 'POST':
         data = {}
