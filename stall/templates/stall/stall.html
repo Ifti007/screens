@@ -1,0 +1,52 @@
+{% extends "stall/base.html" %}
+<!-- Main Container -->
+
+{% block mainContainer %}
+<body ng-app='stall'>
+
+<!-- Jumborton and Carousel -->
+<div class="row">
+<div class="col-md-12">
+<div class="jumbotron">
+<h1>Stall Sale!</h1>
+</div>
+</div>
+</div>
+<!-- End Jumborton and Carousel -->
+
+<!-- Feature section -->
+<div class="row" ng-controller='main'>
+
+<div class="col-md-8">
+<h1 class="text-center text-primary"><span class="glyphicon glyphicon-barcode"></span> Items</h1>
+<table class='table'>
+<thead>
+</thead>
+<tbody ng-repeat='item in items'>
+<tr style="font-size:24px;">
+<td class='col-sm-2'>[[item.descr]]</td>
+<td class='col-sm-1'>[[item.price|currency]]</td>
+
+<td class='col-sm-1'> <a ng-click="qtyMinus(item)"><span class="glyphicon glyphicon-minus"></span> </a>  [[ item.qty ]]   <a ng-click="qtyPlus(item)"><span class="glyphicon glyphicon-plus"></span></a> </td>
+<td class='col-sm-1'>[[item.price * item.qty | currency ]]</td>
+</tr>
+</tbody>
+
+</table>
+</div>
+
+<div class="col-md-4">
+<h1 class="text-center text-primary"><span class="glyphicon glyphicon-credit-card"></span> Totals</h1>
+<form class="form-horizontal">
+<h2 style="text-align:center" > Total: [[totalAmount | currency]]</h2>
+<a ng-disabled="(totalAmount<=0)" class="btn btn-success btn-lg btn-block" ng-click='open(totalAmount)'>Charge</a>
+</form>
+<h4 style="text-align:center">Last Order</h4>
+<p style="text-align:center" ng-repeat='order in lastOrder'>[[order]]</p>
+</div>
+
+
+
+</body>
+
+{% endblock mainContainer %}
