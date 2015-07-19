@@ -466,6 +466,7 @@ def memberCategory(request, page_num="1", page_size="20", search_str=None, order
             s = json.dumps({"error":str(e.message)})
             return HttpResponse(s, content_type='application/json', status=400)
 
+@csrf_exempt  # exempt csrf temporarily
 def paymentCharge(request):
     #response_html = 'events/attendee.html'
     #logger.debug('Attendee view')
