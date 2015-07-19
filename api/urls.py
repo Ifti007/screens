@@ -1,7 +1,7 @@
 from django.conf.urls import url
 
 from . import views
-import events
+
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
@@ -22,5 +22,6 @@ urlpatterns = [
     url(r'^event/membercategory/page/(?P<page_num>[0-9]+)/size/(?P<page_size>[0-9]+)$', views.memberCategory, name='memberCategory'),
     url(r'^event/membercategory/page/(?P<page_num>[0-9]+)/size/(?P<page_size>[0-9]+)/search/(?P<search_str>[A-Za-z0-9]*)$', views.memberCategory, name='memberCategory'),
 
+    url(r'^payments/charge/$', views.paymentCharge, name='paymentCharge'),
 
 ]

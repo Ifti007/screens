@@ -12,8 +12,12 @@ from django.db.models import Q  #For or queries
 import json, math, decimal
 from django.core import serializers
 
+import stripe
 # import the logging library
 import logging
+from matplotlib.cbook import Null
+
+
 
 # Get an instance of a logger
 logger = logging.getLogger('api')
@@ -341,7 +345,7 @@ def attendee(request,model_name = 'attendeeType', page_num="1", page_size="20", 
 
 @csrf_exempt  # exempt csrf temporarily
 def memberCategory(request, page_num="1", page_size="20", search_str=None, order_by='pk', lDatabase='default'):
-    lModel = MEMBER_CATEGORY
+    lModel = '' #MEMBER_CATEGORY
     #lDatabase = 'inguser'
 
     if request.META.get('CONTENT_TYPE'): content_type = request.META['CONTENT_TYPE']
@@ -462,3 +466,61 @@ def memberCategory(request, page_num="1", page_size="20", search_str=None, order
             logger.debug(e)
             s = json.dumps({"error":str(e.message)})
             return HttpResponse(s, content_type='application/json', status=400)
+
+def paymentCharge(request):
+    #response_html = 'events/attendee.html'
+    #logger.debug('Attendee view')
+    if request.META['CONTENT_TYPE']: content_type = request.META['CONTENT_TYPE']
+    if request.method == 'POST':
+        data = {}
+        if 'x-www-form-urlencoded' in content_type or 'application/json' in content_type:
+            data = request.body
+            if type(data) is bytes:
+                data = json.loads(data.decode())
+            else:
+                data = json.loads(data)
+        else:
+            data = request.POST
+        # Set your secret key: remember to change this to your live secret key in production
+        # See your keys here https://dashboard.stripe.com/account/apikeys
+        
+        # Test
+        stripe.api_key = "sk_test_MOTIi9CNcj88J1V9Nys8V6am"  
+        
+        #live
+        #stripe.api_key = "sk_live_0OZFn5fmVgdv2UJa8hHcQiDs"  #Live
+
+        #post = post.decode()
+        logger.debug(data) 
+        # Get the credit card details submitted by the form
+        token = data.get('stripeToken')
+        amount = data.get('amount',0)
+        email = data.get('stripeEmail',None)
+        description = data.get('description','dapps.us')
+        
+        # Create the charge on Stripe's servers - this will charge the user's card
+        try:
+            charge = stripe.Charge.create(
+                                          amount=amount, # amount in cents, again
+                                          currency="usd",
+                                          source=token,
+                                          receipt_email=email,
+                                          description=description
+                                          )
+            msg='Card was successfully charged'
+            status=200
+        
+
+        except (stripe.error.CardError,stripe.error.InvalidRequestError) as e:
+            
+            
+            logger.debug(e.json_body)
+            err = e.json_body.get('error')
+            msg = err.get('message','CardError or InvalidRequestError at server')
+            #logger.debug(msg)
+            status=400
+            return HttpResponse(json.dumps({'message':msg}), content_type='application/json', status=status)
+        
+        logger.debug(msg)
+        logger.debug(status)
+        return HttpResponse(json.dumps({'message':msg}), content_type='application/json', status=status)

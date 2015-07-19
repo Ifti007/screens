@@ -18,6 +18,7 @@ from django.contrib import admin
 from usertrack import urls as userTrackUrls
 from api import urls as apiUrls
 from events import urls as eventsUrls
+from stall import urls as stallUrls
 
 
 urlpatterns = [
@@ -25,5 +26,5 @@ urlpatterns = [
     url(r'^usertrack/', include(userTrackUrls)),
     url(r'^events/', include(eventsUrls)),
     url(r'^api/',include(apiUrls)),
-    
+    url(r'^stall/',include(stallUrls)),
 ]

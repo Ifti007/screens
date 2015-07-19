@@ -91,7 +91,80 @@ class attendee(models.Model):
 	class Meta:
 		db_table = 'ATTENDEE'
 		
+class eventType(models.Model):
+	eventTypeId = models.AutoField(primary_key=True,db_column='EVENT_TYPE_ID')
+	eventType = models.CharField(max_length=128,unique=True,db_column='EVENT_TYPE')
+	
+	def natural_key(self):
+		ret={}
+		ret['id'] = self.id
+		ret['name'] = self.name
+		#ret['price'] = self.price
+		return ret
+				
+	def __str__(self):
+		return self.name + ':' + str(self.price)
+				
+	class Meta:
+		db_table = 'EVENT_TYPE'
+
+class event(models.Model):
+	eventId = models.IntegerField(primary_key=True,db_column='EVENT_ID')
+	tenantId = models.IntegerField(db_column='TENANT_ID')
+	eventType = models.ForeignKey(eventType,db_column='EVENT_TYPE_ID')
+	description = models.TextField(max_length=1024,db_column='DESCRIPTION',null=True)
+	name = models.CharField(max_length=128,db_column='NAME')
+	weburl = models.CharField(max_length=128,db_column='WEB_URL',null=True)
+	email = models.CharField(max_length=128,db_column='EMAIL',null=True)
+	company = models.CharField(max_length=128,db_column='COMPANY',null=True)
+	contact = models.CharField(max_length=128,db_column='CONTACT',null=True)
+	address = models.CharField(max_length=128,db_column='ADDRESS',null=True)
+	startDate = models.DateTimeField(db_column='START_DATE',null=True)
+	endDate = models.DateTimeField(db_column='END_DATE',null=True)
+	
+	def __str__(self):
+		return self.Id + ' ' + self.name
+
+	
+	class Meta:
+		db_table = 'ATTENDEE'
 			    
+class orgType(models.Model):
+	orgTypeId = models.AutoField(primary_key=True,db_column='ORG_TYPE_ID')
+	orgType = models.CharField(max_length=128,unique=True,db_column='ORG_TYPE')
+	orgTypeDescr = models.CharField(max_length=1024,unique=True,db_column='ORG_TYPE_DESCR')
+	
+	def natural_key(self):
+		ret={}
+		ret['id'] = self.orgTypeId
+		ret['name'] = self.orgType
+		#ret['price'] = self.price
+		return ret
+				
+	def __str__(self):
+		return self.name + ':' + str(self.price)
+				
+	class Meta:
+		db_table = 'ORG_TYPE'
+
+class org(models.Model):
+	orgId = models.IntegerField(primary_key=True,db_column='ORG_ID')
+	tenantId = models.IntegerField(db_column='TENANT_ID')
+	orgType = models.ForeignKey(orgType,db_column='ORG_TYPE_ID')
+	description = models.TextField(max_length=1024,db_column='DESCRIPTION',null=True)
+	name = models.CharField(max_length=128,db_column='NAME')
+	weburl = models.CharField(max_length=128,db_column='WEB_URL',null=True)
+	email = models.CharField(max_length=128,db_column='EMAIL',null=True)
+	company = models.CharField(max_length=128,db_column='COMPANY',null=True)
+	contact = models.CharField(max_length=128,db_column='CONTACT',null=True)
+	address = models.CharField(max_length=128,db_column='ADDRESS',null=True)
+	
+	def __str__(self):
+		return self.name + ' ' + self.description
+
+	
+	class Meta:
+		db_table = 'ORG'
 
 	
 	

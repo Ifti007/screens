@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
-
+from django.forms import modelform_factory
 from . import models
 
 import logging
@@ -18,8 +18,21 @@ logger = logging.getLogger('events')
 
 def index(request):
     #return render(request, 'usertrack/usertrack.html')
-    return render_to_response('events/events.html')
+    return render_to_response('events/index.html')
     return HttpResponse("Hello, world.")
+
+def base(request):
+    #return render(request, 'usertrack/usertrack.html')
+    return render_to_response('events/base_events.html')
+    return HttpResponse("Hello, world.")
+
+def form(request,pFormName='orgType'):
+    #return render(request, 'usertrack/usertrack.html')
+    #mod = __import__('events.models',fromlist=pModelName)
+    #lModel = getattr(mod,pModelName)
+    return render_to_response('events/base_forms.html',{'formName':pFormName}
+                                  ,context_instance=RequestContext(request))
+
 
 def badges(request):
     
