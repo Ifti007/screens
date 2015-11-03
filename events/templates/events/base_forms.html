@@ -1,0 +1,66 @@
+{% extends "events/base_events.html" %}
+<!-- Main Container -->
+{% block formContainer %}
+<!-- Jumborton and Carousel -->
+{% load tags %}
+{% get_form "orgType" as form %}
+<div class="panel panel-default" ng-app>
+	<!-- Default panel contents -->
+	<div class="panel-heading">
+		<h1 class="panel-title">{{form.name}}</h1>
+	</div>
+	<div class="panel-body" >
+		<form name="{{form.html_name}}">
+			{% csrf_token %}
+			{% for field in form.fields %}
+			
+			
+			     
+			<div class="row">
+			  <div class="col-md-12">
+				<label class="control-label">{{field.label}}
+				 {% if field.required == "true" %}<span class="glyphicon glyphicon-asterisk" style="color:red;font-size:0.75em;"></span> {% endif %} 
+				 </label>
+				 </div>
+				 </div>
+			<div class="row">
+				<div class="col-md-6">
+				<input 
+					class="form-control"
+					name = "{{field.name}}"
+					 {% if field.required == "true" %} required {% endif %}  
+                     {% for k,v in field.attrs.items %}
+                        {{k}} = "{{v}}" 
+                      {% endfor %} 
+                     />
+				<!-- end input element -->
+			    </div> <!-- end col1 -->
+			<div class="col-md-6">
+			<span ng-if="{{form.html_name}}.{{field.name}}.$dirty && {{form.html_name}}.{{field.name}}.$valid" class="glyphicon glyphicon-ok" style="color:green;vertical-align:bottom"></span>
+			<span ng-if="{{form.html_name}}.{{field.name}}.$dirty && {{form.html_name}}.{{field.name}}.$invalid" class="glyphicon glyphicon-remove" style="color:red;vertical-align:bottom"></span>
+			<div class="text-danger" ng-if="{{form.html_name}}.{{field.name}}.$dirty"
+				ng-messages="{{form.html_name}}.{{field.name}}.$error"
+				ng-messages-include="messages"></div>
+           	   </div> <!-- end col2 -->
+			</div> <!-- end row -->
+			{% endfor %} <!-- End field loop -->
+      </div>
+	
+	<!--  end panel body -->
+	<div class="panel-footer">
+		<h3 ng-if="item.message" class="well text-primary">{{item.message}}</h3>
+		<!-- <pre>[[item.fields|json]]</pre> -->
+			<button ng-disabled="{{form.html_name}}.$invalid || {{form.html_name}}.$pristine"
+				class="btn btn-success" ng-click="save()">Save</button>
+
+				<button ng-disabled="{{form.html_name}}.$invalid || {{form.html_name}}.$pristine"
+					class="btn btn-primary" aria-label="Add New"
+					ng-click="add()">Add</button>
+
+	</div>
+	<!-- end panel-footer -->
+</div>
+<!-- End panel -->
+
+
+{% endblock formContainer %}

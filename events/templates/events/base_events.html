@@ -1,0 +1,53 @@
+{% extends "events/base.html" %}
+<!-- Main Container -->
+{% block mainContainer %}
+{% load tags %}
+<div class="row">
+<div class="col-md-12">
+{% get_menu "main" as menu %}
+
+{% for item in menu %}
+<div class="btn-group">
+{% get_menu item.subMenu as subMenu %}
+{% if subMenu|length <= 0 %} 
+ <a class="btn" href={{item.url}} type="button"> {{item.caption}} </a>
+{% else %}
+  <a class="btn dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+    {{ item.caption }}
+    <span class="caret"></span>
+  </a>
+  
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+  
+  {% for subitem in subMenu %}
+    <li><a href="{{subitem.url}}"> {{subitem.caption}}</a></li>
+  {% endfor %}  
+  </ul>
+{% endif %}
+</div>
+{% endfor %}
+</div>
+</div>
+
+<div class="row">
+	<div class="col-md-12">
+		<div class="well well-sm">
+			<h2>
+ 				{% block formTitle %} title {% endblock formTitle %} <small> {% block formSubTitle %} subtitle {% endblock formSubTitle %}</small>
+			</h2>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-9">
+	{% block formContainer %}
+	{% endblock formContainer %}
+	</div>
+	<div class="col-md-3">
+	 {% block alertContainer %}
+	 {% endblock alertContainer %}
+	</div>
+</div>
+ 
+{% endblock mainContainer %}

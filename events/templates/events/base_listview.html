@@ -1,0 +1,105 @@
+{% extends "events/base_events.html" %}
+<!-- Main Container -->
+{% block listContainer %}
+  <div class="panel panel-info">
+   <div class="panel-heading"> 
+   <label class="pull-right">[[listTitle]] <small> <span "popover-trigger="mouseenter" popover="[[listDescr]]" popover-placement="bottom" class="glyphicon glyphicon-question-sign" ></span></small> </label>
+   
+    <form class="form-inline" role="form">
+        <input class="form-control input-sm" placeholder="search" ng-model="filterPredicate.$" type="search"> 
+        <button class="btn btn-info btn-sm" ng-click="refresh()"><span class="glyphicon glyphicon-refresh"></span></button> 
+		<button class="btn btn-info btn-sm" ng-click="edit(showColumnFilter=!showColumnFilter)"><span class="glyphicon glyphicon-filter"></span></button> 
+		<button class="btn btn-danger btn-sm" ng-click="add()"><span class="glyphicon glyphicon-plus"></span></button> 
+	 </form>
+   </div>
+
+ <div class='panel-body'>
+       <table  class="table" >
+         <thead>
+         
+         <!-- Column Headings-->
+          <tr>
+            <th ng-click="sortPredicate='pk';sortReverse=!sortReverse"> Id
+             <span ng-show="sortPredicate=='pk' && sortReverse" class="glyphicon glyphicon-chevron-up"> </span>
+             <span ng-show="sortPredicate=='pk' && !sortReverse" class="glyphicon glyphicon-chevron-down"> </span>
+            </th>
+           {% for field in form %}
+            <th ng-click="sortPredicate='fields.{{field.name}}';sortReverse=!sortReverse"> {{field.label}} 
+            <span ng-show="sortPredicate=='fields.{{field.name}}' && sortReverse" class="glyphicon glyphicon-chevron-up"> </span>
+            <span ng-show="sortPredicate=='fields.{{field.name}}' && !sortReverse" class="glyphicon glyphicon-chevron-down"> </span>
+            </th>
+           {% endfor %}
+
+            
+            <th> Actions</th>
+
+          </tr>
+          
+          <!-- Filter columns -->
+          <tr ng-show="showColumnFilter">
+            <th>
+             <input class="form-control" ng-model="filterPredicate.pk" placeholder="search pk"> 
+            </th>
+
+           {% for field in form %}
+            <th>
+            <input class="form-control" ng-model="filterPredicate.fields.{{field.name}}" placeholder="search {{field.label}}"> 
+            </th>
+           {% endfor %}
+           
+            
+
+           </tr>
+
+          </thead>
+          <tbody>
+            <tr ng-repeat="item in items | orderBy:sortPredicate:sortReverse |filter:filterPredicate" ng-form="myForm">
+             <td class="col-sm-1" ng-readonly="True">  <p class="form-control-static input-sm"> [[item.id]] </p>  </td> 
+             {% for field in form %}
+              <td ng-show="!item.edit" class="col-sm-2">  
+               <p class="form-control-static input-sm">  [[item.{{field.name}}]] </p>   <!--[[item.fields.{{field.name}}]]-->
+             </td> 
+              <td ng-show="item.edit" class="col-sm-2">  
+               <input ng-show="item.edit" id="{{field.id_for_label}}" name="{{field.html_name}}" 
+               {% if field.field.widget.input_type == "number" %}
+                 ng-model="item._edits.{{field.name}} | number:2"
+            {% else %}
+                 ng-model="item._edits.{{field.name}}"
+            {% endif %}
+                             type="{{field.field.widget.input_type}}"
+                 class="form-control input-sm"   placeholder="{{field.help_text}}" novalidate
+                {% if field.field.required %} required {% endif %} 
+                {% for k,v in field.field.widget.attrs.items %}
+                 {{k}}="{{v}}"
+                {% endfor %} 
+         	    > 
+           	   <div class="text-danger" ng-if="myForm.{{field.html_name}}.$dirty" ng-messages="myForm.{{field.html_name}}.$error" ng-messages-include="messages" ></div>
+           	   <!-- Use following if $setValidity doesnt work
+           	   <div class="text-danger" ng-if="item._meta.field_errors['{{field.html_name}}'].length" ng-repeat="msg in ._meta.field_errors['{{field.html_name}}']">[[msg.message]]</div>
+           	   -->
+
+             </td> 
+             {% endfor %}
+           
+           <td class="col-sm-2"> 
+           
+            <button ng-show="!item.edit" class="btn btn-info btn-sm" ng-click="edit(item,$index,myForm)"><span class="glyphicon glyphicon-pencil"></span></button> 
+            <button ng-show="!item.edit" class="btn btn-sm" ng-click="delete(item)"><span class="glyphicon glyphicon-trash"></span></button> 
+            <!-- to show when user is editing -->
+            <button ng-show="item.edit" class="btn btn-info btn-sm" ng-class="{'active':myForm.$valid ,'disabled':!myForm.$valid}" ng-click="save(item,myForm)">Save </button>
+            <button ng-show="item.edit" class="btn btn-sm" ng-click="cancel(item,$index,myForm)">Cancel </button>
+            <!--<pre>[[myForm.$error|json]] </pre>-->
+            <span class="text-success" ng-repeat="msg in item.messages"> [[msg.message]] </span>
+            
+            <!-- to show when user is save -->
+            <!-- to show when editing is done -->
+           </td> 
+           
+            </tr>
+            
+          </tbody>
+       </table>
+       </div> <!-- end panel body -->
+   </div> <!--end panel -->
+
+{% endblock listContainer %}
