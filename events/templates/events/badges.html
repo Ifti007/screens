@@ -41,7 +41,7 @@ $( document ).ready(function() {
         <div class="middle">
         <div class="category">{{ items.attendeeType.name }}</div>
         <div class="name">{{items.firstName}} {{items.lastName}}</div>
-        <div class="title">{{ items.title}}, {{items.company}}</div>
+        <div class="title">{% if items.title %} {{ items.title}} , {% endif %} {% if items.company %} {{items.company}} {% endif %}</div>
     </div>
     <div class="bottom">
         <div class="barcode"></div>     
